@@ -24,9 +24,14 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+[tool.poetry.plugins.jeeves]
+jira = "jeeves_jira:app"
+
 [tool.poetry.dependencies]
 python = ">=3.7,<3.10"
-jeeves-core = "^0.1.0"
+jira = "^3.0.1"
+backoff = "^1.11.1"
+
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"
