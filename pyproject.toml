@@ -31,6 +31,8 @@ jira = "jeeves_jira:app"
 python = ">=3.7,<3.10"
 jira = "^3.0.1"
 backoff = "^1.11.1"
+stringcase = "^1.2.0"
+click = "<8.0.0"
 
 
 [tool.poetry.dev-dependencies]

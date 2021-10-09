@@ -4,7 +4,7 @@ from typing import Optional
 
 from jira import Issue
 
-from jeeves_jira.cache.models import JiraCache
+from jeeves_jira.models import JiraCache
 
 
 def project_path() -> Path:
@@ -22,9 +22,7 @@ def settings_path() -> Path:
 
 
 def store(cache: JiraCache):
-    settings_path().write_text(json.dumps({
-        'jira': cache.dict(),
-    }))
+    settings_path().write_text(cache.json(by_alias=True))
 
 
 def retrieve() -> JiraCache:
@@ -35,7 +33,7 @@ def retrieve() -> JiraCache:
         settings_path().parent.mkdir(exist_ok=True)
         raw_text = '{}'
 
-    raw = json.loads(raw_text).get('jira')
+    raw = json.loads(raw_text)
 
     if raw:
         return JiraCache(**raw)

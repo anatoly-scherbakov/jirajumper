@@ -1,17 +1,8 @@
-from typing import Dict, Optional
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
-class CustomField(BaseModel):
+class IssueField(BaseModel):
     """Custom JIRA field."""
 
-    internal_name: str
+    cli_name: str
     readable_name: str
-
-
-class JiraCache(BaseModel):
-    """Cached JIRA configuration."""
-
-    selected_issue_key: Optional[str] = None
-    custom_fields: Dict[str, CustomField] = Field(default_factory=dict)

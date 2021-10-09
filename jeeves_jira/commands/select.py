@@ -1,15 +1,18 @@
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 import backoff
 import rich
 from documented import DocumentedError
-from jira import JIRA, JIRAError
+from jira import JIRA, JIRAError, Issue
 from typer import Argument, Context, Option
 
 from jeeves_jira.cache import retrieve, store
 from jeeves_jira.client import issue_url, jira
-from jeeves_jira.models import JeevesJiraContext, OutputFormat
+from jeeves_jira.models import (
+    JeevesJiraContext, OutputFormat, JIRAField,
+    JiraCache,
+)
 
 
 def normalize_issue_specifier(
@@ -60,22 +63,34 @@ class NoIssueSelected(DocumentedError):
     """
 
 
-def prettify_fields(  # type: ignore
-    client: JIRA,
-    fields: Dict[str, Any],
-):
-    custom_fields = [
-        field for field in client.fields()
-        if field['custom']
-    ]
+def issue_to_json(
+    issue: Issue,
+    available_fields: List[JIRAField],
+) -> Dict[str, Any]:   # type: ignore
+    """
+    Represent a JIRA issue as a JSON serializable dict.
 
-    custom_field_alias_by_id = {
-        custom_field['id']: custom_field['name'].lower().strip().replace(' ', '-')
-        for custom_field in custom_fields
+    Take care of field names and (by default) strip null values.
+    """
+    available_field_by_id = {
+        field.id: field
+        for field in available_fields
     }
 
     return {
-        custom_field_alias_by_id.get(field_name, field_name): field_description
+        available_field_by_id[field_name].canonical_name: field_value
+        for field_name, field_value
+        in issue.raw['fields'].items()
+        if field_value is not None
+    }
+
+
+def prettify_fields(  # type: ignore
+    cache: JiraCache,
+    fields: Dict[str, Any],
+):
+    return {
+        cache.issue_fields[field_name].cli_name: field_description
         for field_name, field_description
         in fields.items()
         if field_description is not None
@@ -114,13 +129,11 @@ def select(
         rich.print(issue_url(client.server_url, issue.key))
 
     else:
-        fields = prettify_fields(
-            client=client,
-            fields=issue.raw['fields'],
-        )
-
-        rich.print(json.dumps(
-            fields,
+        print(json.dumps(
+            issue_to_json(
+                issue=issue,
+                available_fields=cache.issue_fields,
+            ),
             indent=2,
         ))
 
