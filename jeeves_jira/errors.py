@@ -7,7 +7,7 @@ from documented import DocumentedError
 @dataclass
 class MissingJiraCredentials(DocumentedError):
     """
-    JIRA credentials are not properly configured!
+    JIRA credentials are not properly configured.
 
     Normally, it is recommended to configure your JIRA settings as environment
     variables - say, in `~/.profile`.

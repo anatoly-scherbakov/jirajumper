@@ -1,13 +1,15 @@
-from typing import Optional
+import json
+from typing import Any, Dict, Optional
 
 import backoff
 import rich
 from documented import DocumentedError
 from jira import JIRA, JIRAError
-from typer import Argument, Option
+from typer import Argument, Context, Option
 
 from jeeves_jira.cache import retrieve, store
 from jeeves_jira.client import issue_url, jira
+from jeeves_jira.models import JeevesJiraContext, OutputFormat
 
 
 def normalize_issue_specifier(
@@ -50,7 +52,7 @@ def normalize_issue_specifier(
 
 class NoIssueSelected(DocumentedError):
     """
-    No issue has been selected!
+    No issue has been selected.
 
     To select an issue PROJ-123, please run:
 
@@ -58,14 +60,36 @@ class NoIssueSelected(DocumentedError):
     """
 
 
+def prettify_fields(  # type: ignore
+    client: JIRA,
+    fields: Dict[str, Any],
+):
+    custom_fields = [
+        field for field in client.fields()
+        if field['custom']
+    ]
+
+    custom_field_alias_by_id = {
+        custom_field['id']: custom_field['name'].lower().strip().replace(' ', '-')
+        for custom_field in custom_fields
+    }
+
+    return {
+        custom_field_alias_by_id.get(field_name, field_name): field_description
+        for field_name, field_description
+        in fields.items()
+        if field_description is not None
+    }
+
+
 @backoff.on_exception(backoff.expo, JIRAError, max_time=5)
 def select(
-    verbose: bool = Option(False, '-v'),
+    context: JeevesJiraContext,
     specifier: Optional[str] = Argument(None),
 ):
     """Select a Jira issue to work with."""
-    cache = retrieve()
-    client = jira()
+    client = context.obj.jira
+    cache = context.obj.cache
 
     if specifier:
         specifier = normalize_issue_specifier(
@@ -85,11 +109,19 @@ def select(
 
         issue = client.issue(cache.selected_issue_key)
 
-    rich.print(f'[bold]{issue.key}[/bold] {issue.fields.summary}')
+    if context.obj.output_format == OutputFormat.PRETTY:
+        rich.print(f'[bold]{issue.key}[/bold] {issue.fields.summary}')
+        rich.print(issue_url(client.server_url, issue.key))
 
-    rich.print(issue_url(client.server_url, issue.key))
+    else:
+        fields = prettify_fields(
+            client=client,
+            fields=issue.raw['fields'],
+        )
 
-    if verbose:
-        rich.print(issue.raw['fields'])
+        rich.print(json.dumps(
+            fields,
+            indent=2,
+        ))
 
     return issue

@@ -46,3 +46,10 @@ def jira() -> JIRA:
 def issue_url(server: str, key: str) -> str:
     """Generate URL for a given issue."""
     return f'{server}/browse/{key}'
+
+
+def custom_fields(client: JIRA):
+    fields = client.fields()
+
+    for field in fields:
+        print(field)
