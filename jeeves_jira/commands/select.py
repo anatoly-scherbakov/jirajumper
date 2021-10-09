@@ -3,11 +3,11 @@ from typing import Optional
 import backoff
 import rich
 from documented import DocumentedError
-from jira import JIRAError, JIRA
+from jira import JIRA, JIRAError
 from typer import Argument, Option
 
 from jeeves_jira.cache import retrieve, store
-from jeeves_jira.client import jira, issue_url
+from jeeves_jira.client import issue_url, jira
 
 
 def normalize_issue_specifier(

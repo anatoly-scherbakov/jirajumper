@@ -1,20 +1,22 @@
 import os
+from typing import Optional
+
 from jira import JIRA
 
 from jeeves_jira.errors import MissingJiraCredentials
 
 
-def env_server() -> str:
+def env_server() -> Optional[str]:
     """Retrieve JIRA server address."""
     return os.getenv('JIRA_SERVER')
 
 
-def env_username() -> str:
+def env_username() -> Optional[str]:
     """Retrieve JIRA server username."""
     return os.getenv('JIRA_USERNAME')
 
 
-def env_token() -> str:
+def env_token() -> Optional[str]:
     """Retrieve JIRA server token."""
     return os.getenv('JIRA_TOKEN')
 
@@ -42,4 +44,5 @@ def jira() -> JIRA:
 
 
 def issue_url(server: str, key: str) -> str:
+    """Generate URL for a given issue."""
     return f'{server}/browse/{key}'

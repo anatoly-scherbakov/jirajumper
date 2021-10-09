@@ -8,16 +8,17 @@ from jeeves_jira.cache.models import JiraCache
 
 
 def project_path() -> Path:
-    dir = Path.cwd()
+    """Find project directory."""
+    current_dir = Path.cwd()
 
-    if (dir / 'pyproject.toml').exists():
-        return dir
+    if (current_dir / 'pyproject.toml').exists():
+        return current_dir
 
     raise ValueError('This is not a project dir!')
 
 
 def settings_path() -> Path:
-    return project_path() / '.cache/jeeves.json'
+    return project_path() / '.cache/jeeves-jira.json'
 
 
 def store(cache: JiraCache):
@@ -26,7 +27,8 @@ def store(cache: JiraCache):
     }))
 
 
-def retrieve() -> Optional[JiraCache]:
+def retrieve() -> JiraCache:
+    """Retrieve JIRA configuration from cache."""
     try:
         raw_text = settings_path().read_text()
     except FileNotFoundError:
