@@ -63,6 +63,18 @@ class NoIssueSelected(DocumentedError):
     """
 
 
+FIELD_ALIASES = {
+    'epic-link': 'epic',
+    'issuetype': 'type',
+    'parent-link': 'parent',
+    'version': 'fixVersions',
+}
+
+
+def find_alias_for(field_name: str) -> str:
+    return FIELD_ALIASES.get(field_name, field_name)
+
+
 def issue_to_json(
     issue: Issue,
     available_fields: List[JIRAField],
@@ -78,7 +90,9 @@ def issue_to_json(
     }
 
     return {
-        available_field_by_id[field_name].canonical_name: field_value
+        find_alias_for(
+            available_field_by_id[field_name].canonical_name,
+        ): field_value
         for field_name, field_value
         in issue.raw['fields'].items()
         if field_value is not None
