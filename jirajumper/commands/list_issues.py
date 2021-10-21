@@ -1,5 +1,5 @@
-from jeeves_jira.client import custom_fields, jira
-from jeeves_jira.models import JeevesJiraContext
+from jirajumper.client import custom_fields, jira
+from jirajumper.models import JeevesJiraContext
 
 
 def list_issues(
