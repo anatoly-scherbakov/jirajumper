@@ -5,7 +5,7 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/jeeves-jira.svg)](https://pypi.org/project/jeeves-jira/)
 [![wemake-python-styleguide](https://img.shields.io/badge/style-wemake-000000.svg)](https://github.com/wemake-services/wemake-python-styleguide)
 
-JIRA integration for jeeves.sh
+Yet another JIRA issue manager CLI with emphasis on task chains.
 
 
 ## Features
@@ -17,7 +17,7 @@ JIRA integration for jeeves.sh
 ## Installation
 
 ```bash
-pip install jeeves-jira
+pip install jirajumper
 ```
 
 

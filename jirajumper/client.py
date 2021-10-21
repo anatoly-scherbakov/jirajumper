@@ -3,7 +3,7 @@ from typing import Optional
 
 from jira import JIRA
 
-from jeeves_jira.errors import MissingJiraCredentials
+from jirajumper.errors import MissingJiraCredentials
 
 
 def env_server() -> Optional[str]:

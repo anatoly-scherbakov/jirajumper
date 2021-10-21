@@ -7,13 +7,13 @@ from jira import JIRA
 from typer import Context, Typer, Option
 from typer.core import TyperCommand, TyperArgument
 
-from jeeves_jira.cache import retrieve, store
-from jeeves_jira.cache.models import IssueField
-from jeeves_jira.client import jira
-from jeeves_jira.commands.clone import clone
-from jeeves_jira.commands.list_issues import list_issues
-from jeeves_jira.commands.select import select, issue_to_json
-from jeeves_jira.models import GlobalOptions, OutputFormat, JIRAField
+from jirajumper.cache import retrieve, store
+from jirajumper.cache.models import IssueField
+from jirajumper.client import jira
+from jirajumper.commands.clone import clone
+from jirajumper.commands.list_issues import list_issues
+from jirajumper.commands.select import jump, issue_to_json
+from jirajumper.models import GlobalOptions, OutputFormat, JIRAField
 
 app = Typer(help='Manage JIRA issues.')
 
@@ -93,12 +93,8 @@ class CloneCommand(TyperCommand):
         super().__init__(**kwargs)
 
 
-app.command()(select)
+app.command()(jump)
 app.command(name='list')(list_issues)
 app.command(
-    # context_settings={
-    #     'allow_extra_args': True,
-    #     'ignore_unknown_options': True,
-    # },
     cls=CloneCommand,
 )(clone)

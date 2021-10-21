@@ -7,9 +7,9 @@ from documented import DocumentedError
 from jira import JIRA, JIRAError, Issue
 from typer import Argument, Context, Option
 
-from jeeves_jira.cache import retrieve, store
-from jeeves_jira.client import issue_url, jira
-from jeeves_jira.models import (
+from jirajumper.cache import retrieve, store
+from jirajumper.client import issue_url, jira
+from jirajumper.models import (
     JeevesJiraContext, OutputFormat, JIRAField,
     JiraCache,
 )
@@ -59,7 +59,7 @@ class NoIssueSelected(DocumentedError):
 
     To select an issue PROJ-123, please run:
 
-        j jira select PROJ-123
+        jj jump PROJ-123
     """
 
 
@@ -112,7 +112,7 @@ def prettify_fields(  # type: ignore
 
 
 @backoff.on_exception(backoff.expo, JIRAError, max_time=5)
-def select(
+def jump(
     context: JeevesJiraContext,
     specifier: Optional[str] = Argument(None),
 ):

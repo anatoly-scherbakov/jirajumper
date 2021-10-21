@@ -1,6 +1,6 @@
 from jira import JIRA
 
-from jeeves_jira.models import JeevesJiraContext
+from jirajumper.models import JeevesJiraContext
 
 
 def clone(

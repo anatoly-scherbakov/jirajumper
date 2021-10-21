@@ -4,8 +4,8 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry]
-name = "jeeves-jira"
-description = "JIRA integration for jeeves.sh"
+name = "jirajumper"
+description = "Yet another JIRA issue manager CLI with emphasis on task chains."
 version = "0.1.0"
 license = "MIT"
 
@@ -13,7 +13,7 @@ authors = []
 
 readme = "README.md"
 
-repository = "https://github.com/jeeves-sh/jeeves-jira"
+repository = "https://github.com/anatoly-scherbakov/jirajumper"
 
 keywords = []
 
@@ -24,8 +24,8 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-[tool.poetry.plugins.jeeves]
-jira = "jeeves_jira:app"
+[tool.poetry.scripts]
+jj = "jirajumper:app"
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.10"
@@ -33,6 +33,10 @@ jira = "^3.0.1"
 backoff = "^1.11.1"
 stringcase = "^1.2.0"
 click = "<8.0.0"
+typer = "^0.4.0"
+pydantic = "^1.8.2"
+documented = "^0.1.1"
+rich = "^10.12.0"
 
 
 [tool.poetry.dev-dependencies]
@@ -50,6 +54,7 @@ m2r2 = "^0.2"
 tomlkit = "^0.7"
 flake8 = "3.9.0"
 flakehell = "^0.9.0"
+ipython = "^7.28.0"
 
 [tool.flakehell]
 base = "https://raw.githubusercontent.com/Recall-Masters/standards/main/pyproject.toml"

@@ -1,7 +1,7 @@
-site_name: jeeves-jira
-repo_url: https://github.com/jeeves-sh/jeeves-jira
-repo_name: jeeves-jira
-copyright: Copyright &copy; 2021 jeeves-jira
+site_name: jirajumper
+repo_url: https://github.com/anatoly-scherbakov/jirajumper
+repo_name: jirajumper
+copyright: Copyright &copy; 2021 Anatoly Scherbakov
 
 markdown_extensions:
   - admonition

@@ -4,7 +4,7 @@ from typing import Optional
 
 from jira import Issue
 
-from jeeves_jira.models import JiraCache
+from jirajumper.models import JiraCache
 
 
 def project_path() -> Path:
