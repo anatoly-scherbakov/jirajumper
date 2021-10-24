@@ -86,7 +86,6 @@ class GlobalOptions:
         return {
             field['name']: field['key']
             for field in self.jira.fields()
-            if field['clauseNames']
         }
 
 
