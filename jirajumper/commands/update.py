@@ -5,8 +5,8 @@ import rich
 from documented import DocumentedError
 from jira import JIRAError
 
-from jirajumper.fields import JiraFieldsRepository
 from jirajumper.cache.cache import JeevesJiraContext
+from jirajumper.fields import JiraFieldsRepository
 
 
 @dataclass
@@ -45,18 +45,18 @@ def update(
     Use `jj jump` to select the issue to update.
     """
     fields_and_values = [
-        (field, kwargs[field.human_name])
-        for field in context.obj.fields
-        if kwargs.get(field.human_name)
+        (applicable_field, kwargs[applicable_field.human_name])
+        for applicable_field in context.obj.fields
+        if kwargs.get(applicable_field.human_name)
     ]
 
     rich.print('Updating:')
-    for field, human_value in fields_and_values:
-        rich.print(f'  - {field.human_name} ≔ {human_value}')
+    for print_field, human_value in fields_and_values:
+        rich.print(f'  - {print_field.human_name} ≔ {human_value}')
 
     issue_fields = dict([
-        field.store(human_value)
-        for field, human_value in fields_and_values
+        store_field.store(human_value)
+        for store_field, human_value in fields_and_values
     ])
 
     try:

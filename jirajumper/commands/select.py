@@ -5,13 +5,11 @@ import backoff
 import rich
 from documented import DocumentedError
 from jira import JIRA, JIRAError
-from typer import Argument
+from typer import Argument, echo
 
 from jirajumper.cache.cache import JeevesJiraContext, JiraCache
 from jirajumper.client import issue_url
-from jirajumper.models import (
-    OutputFormat,
-)
+from jirajumper.models import OutputFormat
 
 
 def normalize_issue_specifier(
@@ -65,7 +63,7 @@ class NoIssueSelected(DocumentedError):
 @backoff.on_exception(backoff.expo, JIRAError, max_time=5)
 def jump(
     context: JeevesJiraContext,
-    specifier: Optional[str] = Argument(None),
+    specifier: Optional[str] = Argument(None),    # noqa: WPS404
 ):
     """Select a Jira issue to work with."""
     client = context.obj.jira
@@ -98,22 +96,22 @@ def jump(
         rich.print(f'[bold]{issue.key}[/bold] {issue.fields.summary}')
         rich.print(issue_url(client.server_url, issue.key))
 
-        for field in context.obj.fields:
-            field_value = field.retrieve(
+        for print_field in context.obj.fields:
+            field_value = print_field.retrieve(
                 issue=issue,
                 field_key_by_name=context.obj.field_key_by_name,
             )
-            rich.print(f'  - {field.human_name}: {field_value}')
+            rich.print(f'  - {print_field.human_name}: {field_value}')
 
     else:
-        print(
+        echo(
             json.dumps(
                 {
-                    field.human_name: field.retrieve(
+                    json_field.human_name: json_field.retrieve(
                         issue=issue,
                         field_key_by_name=context.obj.field_key_by_name,
                     )
-                    for field in context.obj.fields
+                    for json_field in context.obj.fields
                 },
                 indent=2,
             ),

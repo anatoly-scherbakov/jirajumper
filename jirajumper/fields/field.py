@@ -1,12 +1,17 @@
 from dataclasses import dataclass
-from typing import Dict, NewType, Any, Protocol, Union, Tuple
+from typing import Protocol, Tuple, TypeVar, Union
 
 from jira import Issue
 
 from jirajumper.models import (
-    FieldByName, JiraValue, HumanValue,
-    NotImplementedType, FieldKeyByName,
+    FieldByName,
+    FieldKeyByName,
+    HumanValue,
+    JiraValue,
+    NotImplementedType,
 )
+
+AnyType = TypeVar('AnyType')
 
 
 class ToJira(Protocol):
@@ -14,7 +19,7 @@ class ToJira(Protocol):
 
     def __call__(self, human_value: HumanValue) -> JiraValue:
         """Convert a human-readable value to JIRA field."""
-        raise NotImplemented()
+        raise NotImplementedError()
 
 
 class FromJira(Protocol):
@@ -22,12 +27,12 @@ class FromJira(Protocol):
 
     def __call__(self, jira_value: JiraValue) -> HumanValue:
         """Convert a native JIRA field value to a human readable one."""
-        raise NotImplemented()
+        raise NotImplementedError()
 
 
-def identity(x):
+def identity(any_value: AnyType) -> AnyType:
     """Identity function."""
-    return x
+    return any_value
 
 
 @dataclass(frozen=True)

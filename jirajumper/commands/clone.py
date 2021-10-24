@@ -3,8 +3,8 @@ from typing import Optional
 import rich
 from typer import Option
 
-from jirajumper.models import CloneIssue
 from jirajumper.cache.cache import JeevesJiraContext
+from jirajumper.models import CloneIssue
 
 
 def clone(

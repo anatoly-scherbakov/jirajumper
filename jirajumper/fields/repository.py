@@ -1,7 +1,4 @@
-from typing import (
-    List,
-    Optional,
-)
+from typing import List, Optional
 
 from more_itertools import first
 

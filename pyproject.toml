@@ -56,6 +56,8 @@ tomlkit = "^0.7"
 flake8 = "3.9.0"
 flakehell = "^0.9.0"
 ipython = "^7.28.0"
+invoke = "^1.6.0"
+magicinvoke = "^2.4.5"
 
 [tool.flakehell]
 base = "https://raw.githubusercontent.com/Recall-Masters/standards/main/pyproject.toml"

@@ -5,7 +5,6 @@ from jirajumper.fields.field import JiraField
 from jirajumper.fields.repository import JiraFieldsRepository
 from jirajumper.models import FieldByName
 
-
 get_name = operator.attrgetter('name')
 
 

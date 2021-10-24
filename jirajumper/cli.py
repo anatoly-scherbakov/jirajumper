@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import click
-from typer import Context, Typer, Option
+from typer import Context, Option, Typer
 from typer.core import TyperCommand
 
 from jirajumper.cache.cache import GlobalOptions

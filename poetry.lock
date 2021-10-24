@@ -68,6 +68,14 @@ six = ">=1.10.0"
 stevedore = ">=1.20.0"
 
 [[package]]
+name = "cachepath"
+version = "1.1.1"
+description = "Pythonic parameterized cache paths."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "certifi"
 version = "2021.10.8"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -443,6 +451,14 @@ docs = ["alabaster", "pygments-github-lexers", "recommonmark", "sphinx"]
 dev = ["dlint", "flake8-2020", "flake8-aaa", "flake8-absolute-import", "flake8-alfred", "flake8-annotations-complexity", "flake8-bandit", "flake8-black", "flake8-broken-line", "flake8-bugbear", "flake8-builtins", "flake8-coding", "flake8-cognitive-complexity", "flake8-commas", "flake8-comprehensions", "flake8-debugger", "flake8-django", "flake8-docstrings", "flake8-eradicate", "flake8-executable", "flake8-expression-complexity", "flake8-fixme", "flake8-functions", "flake8-future-import", "flake8-import-order", "flake8-isort", "flake8-logging-format", "flake8-mock", "flake8-mutable", "flake8-mypy", "flake8-pep3101", "flake8-pie", "flake8-print", "flake8-printf-formatting", "flake8-pyi", "flake8-pytest", "flake8-pytest-style", "flake8-quotes", "flake8-requirements", "flake8-rst-docstrings", "flake8-scrapy", "flake8-spellcheck", "flake8-sql", "flake8-strict", "flake8-string-format", "flake8-tidy-imports", "flake8-todo", "flake8-use-fstring", "flake8-variables-names", "isort", "mccabe", "pandas-vet", "pep8-naming", "pylint", "pytest", "typing-extensions", "wemake-python-styleguide"]
 
 [[package]]
+name = "funcsigs"
+version = "1.0.2"
+description = "Python function signatures from PEP362 for Python 2.6, 2.7 and 3.2+"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "gitdb"
 version = "4.0.7"
 description = "Git Object Database"
@@ -494,6 +510,14 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 name = "iniconfig"
 version = "1.1.1"
 description = "iniconfig: brain-dead simple config-ini parsing"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "invoke"
+version = "1.6.0"
+description = "Pythonic task execution"
 category = "dev"
 optional = false
 python-versions = "*"
@@ -623,6 +647,20 @@ docutils = "*"
 mistune = "*"
 
 [[package]]
+name = "magicinvoke"
+version = "2.4.5"
+description = "Pythonic task execution -- Based on invoke by Jeff Forcier"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+cachepath = "*"
+colorama = "*"
+funcsigs = "*"
+pathlib2 = "*"
+
+[[package]]
 name = "matplotlib-inline"
 version = "0.1.3"
 description = "Inline Matplotlib backend for Jupyter"
@@ -718,6 +756,17 @@ python-versions = ">=3.6"
 [package.extras]
 qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
 testing = ["docopt", "pytest (<6.0.0)"]
+
+[[package]]
+name = "pathlib2"
+version = "2.3.6"
+description = "Object-oriented filesystem paths"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
 
 [[package]]
 name = "pbr"
@@ -1215,7 +1264,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "0a214b528abdc8753352000597ed42502f32e782ebc1dd785f100650b53cefe0"
+content-hash = "d5327de9bbe3370ccd2057a4ef95ac7f5dda5ae94670d86d2275e6942141e0de"
 
 [metadata.files]
 appnope = [
@@ -1245,6 +1294,10 @@ backoff = [
 bandit = [
     {file = "bandit-1.7.0-py3-none-any.whl", hash = "sha256:216be4d044209fa06cf2a3e51b319769a51be8318140659719aa7a115c35ed07"},
     {file = "bandit-1.7.0.tar.gz", hash = "sha256:8a4c7415254d75df8ff3c3b15cfe9042ecee628a1e40b44c15a98890fbfc2608"},
+]
+cachepath = [
+    {file = "cachepath-1.1.1-py2.py3-none-any.whl", hash = "sha256:8a92ec61cc2bc40401bda656b47bdb3b16234e500357ff66edd8f8a2c7524b7c"},
+    {file = "cachepath-1.1.1.tar.gz", hash = "sha256:a9a511a5c2e12f1b0ed53111446851e8843bd895a1055356a179a679a9f21bcc"},
 ]
 certifi = [
     {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"},
@@ -1467,6 +1520,10 @@ flakehell = [
     {file = "flakehell-0.9.0-py3-none-any.whl", hash = "sha256:48a3a9b46136240e52b3b32a78a0826c45f6dcf7d980c30f758c1db5b1439c0b"},
     {file = "flakehell-0.9.0.tar.gz", hash = "sha256:208836d8d24194d50cfa4c1fc99f681f3c537cc232edcd06455abc2971460893"},
 ]
+funcsigs = [
+    {file = "funcsigs-1.0.2-py2.py3-none-any.whl", hash = "sha256:330cc27ccbf7f1e992e69fef78261dc7c6569012cf397db8d3de0234e6c937ca"},
+    {file = "funcsigs-1.0.2.tar.gz", hash = "sha256:a7bb0f2cf3a3fd1ab2732cb49eba4252c2af4240442415b4abce3b87022a8f50"},
+]
 gitdb = [
     {file = "gitdb-4.0.7-py3-none-any.whl", hash = "sha256:6c4cc71933456991da20917998acbe6cf4fb41eeaab7d6d67fbc05ecd4c865b0"},
     {file = "gitdb-4.0.7.tar.gz", hash = "sha256:96bf5c08b157a666fec41129e6d327235284cca4c81e92109260f353ba138005"},
@@ -1486,6 +1543,11 @@ importlib-metadata = [
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
+]
+invoke = [
+    {file = "invoke-1.6.0-py2-none-any.whl", hash = "sha256:e6c9917a1e3e73e7ea91fdf82d5f151ccfe85bf30cc65cdb892444c02dbb5f74"},
+    {file = "invoke-1.6.0-py3-none-any.whl", hash = "sha256:769e90caeb1bd07d484821732f931f1ad8916a38e3f3e618644687fc09cb6317"},
+    {file = "invoke-1.6.0.tar.gz", hash = "sha256:374d1e2ecf78981da94bfaf95366216aaec27c2d6a7b7d5818d92da55aa258d3"},
 ]
 ipython = [
     {file = "ipython-7.28.0-py3-none-any.whl", hash = "sha256:f16148f9163e1e526f1008d7c8d966d9c15600ca20d1a754287cf96d00ba6f1d"},
@@ -1514,6 +1576,11 @@ keyring = [
 m2r2 = [
     {file = "m2r2-0.2.8-py3-none-any.whl", hash = "sha256:613934a5d02999574c0256407e6a0e71f8c436f2d2757d6e43d52d2faf8dff1c"},
     {file = "m2r2-0.2.8.tar.gz", hash = "sha256:ca39e1db74991818d667c7367e4fc2de13ecefd2a04d69d83b0ffa76d20d7e29"},
+]
+magicinvoke = [
+    {file = "magicinvoke-2.4.5-py2-none-any.whl", hash = "sha256:e5185f9eef60df537825bfd99ae9afe96300d154eb74d425ec75683ef3941d7f"},
+    {file = "magicinvoke-2.4.5-py3-none-any.whl", hash = "sha256:02b5678f22e7b6100f682ecb9cb75516f778efc2bceb60e999d2d6cffc0aab3e"},
+    {file = "magicinvoke-2.4.5.tar.gz", hash = "sha256:acb85e27d51f23b4a458392c9ad85eb75f743a5eb53784985aa2dbb78b49a9f1"},
 ]
 matplotlib-inline = [
     {file = "matplotlib-inline-0.1.3.tar.gz", hash = "sha256:a04bfba22e0d1395479f866853ec1ee28eea1485c1d69a6faf00dc3e24ff34ee"},
@@ -1571,6 +1638,10 @@ packaging = [
 parso = [
     {file = "parso-0.8.2-py2.py3-none-any.whl", hash = "sha256:a8c4922db71e4fdb90e0d0bc6e50f9b273d3397925e5e60a717e719201778d22"},
     {file = "parso-0.8.2.tar.gz", hash = "sha256:12b83492c6239ce32ff5eed6d3639d6a536170723c6f3f1506869f1ace413398"},
+]
+pathlib2 = [
+    {file = "pathlib2-2.3.6-py2.py3-none-any.whl", hash = "sha256:3a130b266b3a36134dcc79c17b3c7ac9634f083825ca6ea9d8f557ee6195c9c8"},
+    {file = "pathlib2-2.3.6.tar.gz", hash = "sha256:7d8bcb5555003cdf4a8d2872c538faa3a0f5d20630cb360e518ca3b981795e5f"},
 ]
 pbr = [
     {file = "pbr-5.6.0-py2.py3-none-any.whl", hash = "sha256:c68c661ac5cc81058ac94247278eeda6d2e6aecb3e227b0387c30d277e7ef8d4"},

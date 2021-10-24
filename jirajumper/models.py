@@ -1,8 +1,7 @@
 from enum import Enum
-from typing import Optional, NamedTuple, NewType, Dict, Any, Union
+from typing import Any, Dict, NamedTuple, NewType, Optional, Union
 
 from pydantic import BaseModel
-
 
 FieldKeyByName = Dict[str, str]
 JiraValue = NewType('JiraValue', Any)
@@ -10,7 +9,7 @@ HumanValue = NewType('HumanValue', Optional[Union[str, int, float]])
 NotImplementedType = type(NotImplemented)
 
 
-class OutputFormat(str, Enum):
+class OutputFormat(str, Enum):  # noqa: WPS600
     """Output format."""
 
     PRETTY = 'pretty'
