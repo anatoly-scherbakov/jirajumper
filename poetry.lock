@@ -515,14 +515,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "invoke"
-version = "1.6.0"
-description = "Pythonic task execution"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "ipython"
 version = "7.28.0"
 description = "IPython: Productive Interactive Computing"
@@ -1264,7 +1256,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "d5327de9bbe3370ccd2057a4ef95ac7f5dda5ae94670d86d2275e6942141e0de"
+content-hash = "c698ffaf0a77922b3de30f6cc014b694ddffebb784cf4cc3c8b10e6127920e09"
 
 [metadata.files]
 appnope = [
@@ -1543,11 +1535,6 @@ importlib-metadata = [
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
-]
-invoke = [
-    {file = "invoke-1.6.0-py2-none-any.whl", hash = "sha256:e6c9917a1e3e73e7ea91fdf82d5f151ccfe85bf30cc65cdb892444c02dbb5f74"},
-    {file = "invoke-1.6.0-py3-none-any.whl", hash = "sha256:769e90caeb1bd07d484821732f931f1ad8916a38e3f3e618644687fc09cb6317"},
-    {file = "invoke-1.6.0.tar.gz", hash = "sha256:374d1e2ecf78981da94bfaf95366216aaec27c2d6a7b7d5818d92da55aa258d3"},
 ]
 ipython = [
     {file = "ipython-7.28.0-py3-none-any.whl", hash = "sha256:f16148f9163e1e526f1008d7c8d966d9c15600ca20d1a754287cf96d00ba6f1d"},

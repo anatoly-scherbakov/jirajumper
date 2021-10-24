@@ -33,3 +33,9 @@ def fmt(ctx: Context):
     """Auto-format code."""
     targets = ctx['python_targets']
     ctx.run(f'isort {targets}')
+
+
+@task
+def publish(ctx: Context):
+    """Publish to PyPI."""
+    ctx.run('poetry publish --build', pty=True)

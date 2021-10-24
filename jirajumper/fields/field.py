@@ -67,9 +67,16 @@ class JiraField:
             ),
         )
 
-    def store(self, human_value: HumanValue) -> Tuple[str, JiraValue]:
+    def store(
+        self,
+        human_value: HumanValue,
+        field_key_by_name: FieldKeyByName,
+    ) -> Tuple[str, JiraValue]:
         """Convert the readable value into JIRA native form."""
-        return self.jira_name, self.to_jira(human_value)
+        jira_name = self.resolve_jira_field_name(
+            field_key_by_name=field_key_by_name,
+        )
+        return jira_name, self.to_jira(human_value)
 
     def is_writable(self):
         """Find out if this field is writable."""

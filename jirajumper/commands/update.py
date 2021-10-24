@@ -7,25 +7,34 @@ from jira import JIRAError
 
 from jirajumper.cache.cache import JeevesJiraContext
 from jirajumper.fields import JiraFieldsRepository
+from jirajumper.models import FieldKeyByName
 
 
 @dataclass
 class JIRAUpdateFailed(DocumentedError):
     """
-    Cannot update a JIRA issue :(
+    Cannot update a JIRA issue 🙁.
 
-    Errors
+    Errors:
     {self.formatted_errors}
     """
 
     errors: Dict[str, str]
     fields: JiraFieldsRepository
+    field_key_by_name: FieldKeyByName
 
     @property
     def formatted_errors(self) -> str:
         """Format the error list received from JIRA."""
+        field_per_resolved_jira_name = {
+            field.resolve_jira_field_name(
+                field_key_by_name=self.field_key_by_name,
+            ): field
+            for field in self.fields
+        }
+
         error_by_field = [
-            (self.fields.find_by_jira_name(jira_name), error_message)
+            (field_per_resolved_jira_name[jira_name], error_message)
             for jira_name, error_message in self.errors.items()
         ]
 
@@ -55,7 +64,10 @@ def update(
         rich.print(f'  - {print_field.human_name} ≔ {human_value}')
 
     issue_fields = dict([
-        store_field.store(human_value)
+        store_field.store(
+            human_value=human_value,
+            field_key_by_name=context.obj.field_key_by_name,
+        )
         for store_field, human_value in fields_and_values
     ])
 
@@ -65,6 +77,7 @@ def update(
         raise JIRAUpdateFailed(
             errors=err.response.json().get('errors', {}),
             fields=context.obj.fields,
+            field_key_by_name=context.obj.field_key_by_name,
         ) from err
 
     rich.print('Updated!')
