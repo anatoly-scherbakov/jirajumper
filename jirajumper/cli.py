@@ -1,21 +1,24 @@
-from itertools import starmap
 from typing import List
 
 import click
-import stringcase
 from jira import JIRA
 from typer import Context, Typer, Option
-from typer.core import TyperCommand, TyperArgument
+from typer.core import TyperCommand
 
 from jirajumper.cache import retrieve, store
-from jirajumper.cache.models import IssueField
+from jirajumper.cache.cache import JIRAField, GlobalOptions
 from jirajumper.client import jira
 from jirajumper.commands.clone import clone
 from jirajumper.commands.list_issues import list_issues
-from jirajumper.commands.select import jump, issue_to_json
-from jirajumper.models import GlobalOptions, OutputFormat, JIRAField
+from jirajumper.commands.select import jump
+from jirajumper.commands.update import update
+from jirajumper.fields import FIELDS
+from jirajumper.models import OutputFormat
 
-app = Typer(help='Manage JIRA issues.')
+app = Typer(
+    help='Manage JIRA issues.',
+    no_args_is_help=True,
+)
 
 
 def retrieve_issue_fields(client: JIRA) -> List[JIRAField]:
@@ -46,6 +49,7 @@ def global_options(
         output_format=format,
         jira=client,
         cache=cache,
+        fields=FIELDS,
     )
 
 
@@ -60,30 +64,14 @@ EDITABLE_FIELDS = frozenset({
 })
 
 
-class CloneCommand(TyperCommand):
+class UpdateCommand(TyperCommand):
     def __init__(self, **kwargs):
-        # FIXME 🐞 JIRA client is initialized multiple times in the code
-        client = jira()
-
-        cache = retrieve()
-
-        # FIXME 🐞 `clone` command will crash if no issue is selected
-        current_issue = client.issue(cache.selected_issue_key)
-
-        # FIXME 🐞 `clone` command will crash if JIRA available fields have not
-        #   been retrieved yet
-        issue_data = issue_to_json(
-            issue=current_issue,
-            available_fields=cache.issue_fields,
-        )
-
         custom_options = [
             click.Option(
-                [f'--{field_name}'],
-                help=f'[{field_value}]',
+                [f'--{field.human_name}'],
+                help=field.description,
             )
-            for field_name, field_value in issue_data.items()
-            if field_name in EDITABLE_FIELDS
+            for field in FIELDS.writable()
         ]
 
         kwargs.update(
@@ -95,6 +83,10 @@ class CloneCommand(TyperCommand):
 
 app.command()(jump)
 app.command(name='list')(list_issues)
+app.command()(clone)
 app.command(
-    cls=CloneCommand,
-)(clone)
+    cls=UpdateCommand,
+    context_settings={
+        'ignore_unknown_options': True,
+    },
+)(update)

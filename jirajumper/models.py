@@ -1,12 +1,13 @@
-import re
 from enum import Enum
-from functools import cached_property
-from typing import List, Optional
+from typing import Optional, NamedTuple, NewType, Dict, Any
 
-import stringcase
-from jira import JIRA
-from pydantic import BaseModel, Field
-from typer import Context
+from pydantic import BaseModel
+
+
+FieldKeyByName = Dict[str, str]
+JiraValue = NewType('JiraValue', Any)
+HumanValue = NewType('HumanValue', Any)
+NotImplementedType = type(NotImplemented)
 
 
 class OutputFormat(str, Enum):
@@ -16,68 +17,31 @@ class OutputFormat(str, Enum):
     JSON = 'json'
 
 
-class IssueFieldSchema(BaseModel):
-    """JIRA issue field schema."""
+class Fields(BaseModel):
+    """Supported base fields."""
 
-    field_type: str = Field(alias='type')
-    system: Optional[str] = None
-
-
-class JIRAField(BaseModel):
-    """Description of a JIRA issue field."""
-
-    id: str
-    key: str
-    name: str
-    custom: bool
-    orderable: bool
-    navigable: bool
-    searchable: bool
-    clause_names: List[str] = Field(alias='clauseNames')
-    field_schema: Optional[IssueFieldSchema] = Field(None, alias='schema')
-
-    @property
-    def canonical_name(self):
-        """
-        Generate canonical name of the field.
-
-        That name will be used to render field names in CLI.
-        """
-        if not self.custom:
-            return self.id
-
-        name = self.name.strip()
-        name = re.sub(r'[\[\]]', '', name)
-
-        name = stringcase.spinalcase(name)
-
-        name = name.strip('-')
-        name = name.replace('--', '-')
-
-        return name
+    summary: Optional[str] = None
+    issue_type: Optional[str] = None
+    version: Optional[str] = None
+    project: Optional[str] = None
+    epic_name: Optional[str] = None
+    epic_link: Optional[str] = None
+    assignee: Optional[str] = None
 
 
-class JiraCache(BaseModel):
-    """Cached JIRA configuration."""
+class CloneIssue(Fields):
+    """Fields to clone an issue."""
 
-    selected_issue_key: Optional[str] = None
-    issue_fields: List[JIRAField] = Field(default_factory=list)
-
-
-class GlobalOptions(BaseModel):
-    """Global jeeves-jira configuration options."""
-
-    output_format: OutputFormat
-    jira: JIRA
-    cache: JiraCache
-
-    class Config:
-        """Allow the use of JIRA instance."""
-
-        arbitrary_types_allowed = True
+    summary: str
 
 
-class JeevesJiraContext(Context):
-    """Typer context with GlobalOptions instance as obj."""
+class RetrieveIssue(CloneIssue):
+    """Retrieved issue."""
 
-    obj: GlobalOptions
+    summary: str
+
+
+class FieldByName(NamedTuple):
+    """Find a field by its user-facing JIRA name."""
+
+    readable_name: str

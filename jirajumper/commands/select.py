@@ -7,11 +7,13 @@ from documented import DocumentedError
 from jira import JIRA, JIRAError, Issue
 from typer import Argument, Context, Option
 
-from jirajumper.cache import retrieve, store
+from jirajumper.cache import (
+    retrieve, store,
+)
+from jirajumper.cache.cache import JIRAField, JiraCache, JeevesJiraContext
 from jirajumper.client import issue_url, jira
 from jirajumper.models import (
-    JeevesJiraContext, OutputFormat, JIRAField,
-    JiraCache,
+    OutputFormat,
 )
 
 
@@ -141,6 +143,13 @@ def jump(
     if context.obj.output_format == OutputFormat.PRETTY:
         rich.print(f'[bold]{issue.key}[/bold] {issue.fields.summary}')
         rich.print(issue_url(client.server_url, issue.key))
+
+        for field in context.obj.fields:
+            field_value = field.retrieve(
+                issue=issue,
+                field_key_by_name=context.obj.field_key_by_name,
+            )
+            rich.print(f'  - {field.human_name}: {field_value}')
 
     else:
         print(json.dumps(

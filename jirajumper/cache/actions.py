@@ -1,10 +1,7 @@
 import json
 from pathlib import Path
-from typing import Optional
 
-from jira import Issue
-
-from jirajumper.models import JiraCache
+from jirajumper.cache.cache import JiraCache
 
 
 def project_path() -> Path:
