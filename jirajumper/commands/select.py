@@ -1,18 +1,15 @@
 import json
-from typing import Any, Dict, Optional, List
+from typing import Optional
 
 import backoff
 import rich
 from documented import DocumentedError
-from jira import JIRA, JIRAError, Issue
-from typer import Argument, Context, Option
+from jira import JIRA, JIRAError
+from typer import Argument, echo
 
-from jirajumper.cache import retrieve, store
-from jirajumper.client import issue_url, jira
-from jirajumper.models import (
-    JeevesJiraContext, OutputFormat, JIRAField,
-    JiraCache,
-)
+from jirajumper.cache.cache import JeevesJiraContext, JiraCache
+from jirajumper.client import issue_url
+from jirajumper.models import OutputFormat
 
 
 def normalize_issue_specifier(
@@ -63,58 +60,10 @@ class NoIssueSelected(DocumentedError):
     """
 
 
-FIELD_ALIASES = {
-    'epic-link': 'epic',
-    'issuetype': 'type',
-    'parent-link': 'parent',
-    'version': 'fixVersions',
-}
-
-
-def find_alias_for(field_name: str) -> str:
-    return FIELD_ALIASES.get(field_name, field_name)
-
-
-def issue_to_json(
-    issue: Issue,
-    available_fields: List[JIRAField],
-) -> Dict[str, Any]:   # type: ignore
-    """
-    Represent a JIRA issue as a JSON serializable dict.
-
-    Take care of field names and (by default) strip null values.
-    """
-    available_field_by_id = {
-        field.id: field
-        for field in available_fields
-    }
-
-    return {
-        find_alias_for(
-            available_field_by_id[field_name].canonical_name,
-        ): field_value
-        for field_name, field_value
-        in issue.raw['fields'].items()
-        if field_value is not None
-    }
-
-
-def prettify_fields(  # type: ignore
-    cache: JiraCache,
-    fields: Dict[str, Any],
-):
-    return {
-        cache.issue_fields[field_name].cli_name: field_description
-        for field_name, field_description
-        in fields.items()
-        if field_description is not None
-    }
-
-
 @backoff.on_exception(backoff.expo, JIRAError, max_time=5)
 def jump(
     context: JeevesJiraContext,
-    specifier: Optional[str] = Argument(None),
+    specifier: Optional[str] = Argument(None),    # noqa: WPS404
 ):
     """Select a Jira issue to work with."""
     client = context.obj.jira
@@ -129,7 +78,12 @@ def jump(
 
         issue = client.issue(specifier)
         cache.selected_issue_key = issue.key
-        store(cache)
+
+        context.obj.store_cache(
+            JiraCache(
+                selected_issue_key=issue.key,
+            ),
+        )
     else:
         key = cache.selected_issue_key
 
@@ -142,13 +96,25 @@ def jump(
         rich.print(f'[bold]{issue.key}[/bold] {issue.fields.summary}')
         rich.print(issue_url(client.server_url, issue.key))
 
-    else:
-        print(json.dumps(
-            issue_to_json(
+        for print_field in context.obj.fields:
+            field_value = print_field.retrieve(
                 issue=issue,
-                available_fields=cache.issue_fields,
+                field_key_by_name=context.obj.field_key_by_name,
+            )
+            rich.print(f'  - {print_field.human_name}: {field_value}')
+
+    else:
+        echo(
+            json.dumps(
+                {
+                    json_field.human_name: json_field.retrieve(
+                        issue=issue,
+                        field_key_by_name=context.obj.field_key_by_name,
+                    )
+                    for json_field in context.obj.fields
+                },
+                indent=2,
             ),
-            indent=2,
-        ))
+        )
 
     return issue
