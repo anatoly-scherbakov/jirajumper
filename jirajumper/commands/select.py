@@ -7,10 +7,7 @@ from documented import DocumentedError
 from jira import JIRA, JIRAError
 from typer import Argument
 
-from jirajumper.cache import (
-    store,
-)
-from jirajumper.cache.cache import JeevesJiraContext
+from jirajumper.cache.cache import JeevesJiraContext, JiraCache
 from jirajumper.client import issue_url
 from jirajumper.models import (
     OutputFormat,
@@ -83,7 +80,12 @@ def jump(
 
         issue = client.issue(specifier)
         cache.selected_issue_key = issue.key
-        store(cache)
+
+        context.obj.store_cache(
+            JiraCache(
+                selected_issue_key=issue.key,
+            ),
+        )
     else:
         key = cache.selected_issue_key
 

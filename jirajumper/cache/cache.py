@@ -1,5 +1,7 @@
+import json
 from dataclasses import dataclass
 from functools import cached_property
+from pathlib import Path
 from typing import Optional
 
 from jira import JIRA, Issue
@@ -30,8 +32,31 @@ class GlobalOptions:
 
     output_format: OutputFormat
     jira: JIRA
-    cache: JiraCache
+    cache_path: Path
     fields: JiraFieldsRepository
+
+    @cached_property
+    def cache(self) -> JiraCache:
+        """Retrieve jirajumper cache from disk."""
+        try:
+            raw_cache = self.cache_path.read_text()
+        except (FileNotFoundError, PermissionError):
+            return JiraCache()
+
+        try:
+            return JiraCache.parse_raw(raw_cache)
+        except ValueError:
+            return JiraCache()
+
+    def store_cache(self, cache: JiraCache):
+        """Store cache contents on disk."""
+        encoded_cache = cache.json(by_alias=True)
+
+        try:
+            self.cache_path.write_text(encoded_cache)
+        except FileNotFoundError:
+            self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+            self.cache_path.write_text(encoded_cache)
 
     @cached_property
     def current_issue(self) -> Issue:

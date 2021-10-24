@@ -1,8 +1,9 @@
+from pathlib import Path
+
 import click
 from typer import Context, Typer, Option
 from typer.core import TyperCommand
 
-from jirajumper.cache import retrieve
 from jirajumper.cache.cache import GlobalOptions
 from jirajumper.client import jira
 from jirajumper.commands.clone import clone
@@ -25,16 +26,18 @@ def global_options(
         OutputFormat.PRETTY,
         help='Format to print the data in',
     ),
+    cache_path: Path = Option(
+        default=Path.home() / '.cache/jirajumper/jirajumper.json',
+        envvar='JIRAJUMPER_CACHE_PATH',
+        help='Path to the JSON file where jirajumper will store its cache.',
+    ),
 ):
     """Configure global options valid for most of jeeves-jira commands."""
-    client = jira()
-    cache = retrieve()
-
     context.obj = GlobalOptions(
         output_format=format,
-        jira=client,
-        cache=cache,
+        jira=jira(),
         fields=FIELDS,
+        cache_path=cache_path,
     )
 
 

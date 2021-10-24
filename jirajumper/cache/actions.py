@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 from jirajumper.cache.cache import JiraCache
@@ -14,25 +15,9 @@ def project_path() -> Path:
     raise ValueError('This is not a project dir!')
 
 
-def settings_path() -> Path:
-    return project_path() / '.cache/jeeves-jira.json'
-
-
-def store(cache: JiraCache):
-    settings_path().write_text(cache.json(by_alias=True))
-
-
-def retrieve() -> JiraCache:
-    """Retrieve JIRA configuration from cache."""
-    try:
-        raw_text = settings_path().read_text()
-    except FileNotFoundError:
-        settings_path().parent.mkdir(exist_ok=True)
-        raw_text = '{}'
-
-    raw = json.loads(raw_text)
-
-    if raw:
-        return JiraCache(**raw)
-
-    return JiraCache()
+def construct_cache_file_path() -> Path:
+    """Path to jirajumper cache file."""
+    return Path(os.getenv(
+        'JIRAJUMPER_CACHE',
+        Path.home() / '.cache/jirajumper',
+    )) / 'jirajumper.json'
