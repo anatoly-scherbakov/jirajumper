@@ -1,12 +1,12 @@
 from enum import Enum
-from typing import Optional, NamedTuple, NewType, Dict, Any
+from typing import Optional, NamedTuple, NewType, Dict, Any, Union
 
 from pydantic import BaseModel
 
 
 FieldKeyByName = Dict[str, str]
 JiraValue = NewType('JiraValue', Any)
-HumanValue = NewType('HumanValue', Any)
+HumanValue = NewType('HumanValue', Optional[Union[str, int, float]])
 NotImplementedType = type(NotImplemented)
 
 

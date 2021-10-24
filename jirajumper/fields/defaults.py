@@ -1,8 +1,12 @@
 """A few default JIRA fields with their definitions and formats."""
+import operator
 
 from jirajumper.fields.field import JiraField
 from jirajumper.fields.repository import JiraFieldsRepository
 from jirajumper.models import FieldByName
+
+
+get_name = operator.attrgetter('name')
 
 
 VERSION = JiraField(
@@ -35,6 +39,7 @@ STATUS = JiraField(
 
     # It is impossible to set issue status directly in update() operation.
     to_jira=NotImplemented,
+    from_jira=get_name,
 )
 
 
@@ -44,6 +49,7 @@ TYPE = JiraField(
     description='Issue type.',
 
     to_jira=lambda type_name: {'name': type_name},
+    from_jira=get_name,
 )
 
 PROJECT = JiraField(
@@ -53,6 +59,7 @@ PROJECT = JiraField(
 
     # It is impossible to easily migrate across projects.
     to_jira=NotImplemented,
+    from_jira=get_name,
 )
 
 DESCRIPTION = JiraField(

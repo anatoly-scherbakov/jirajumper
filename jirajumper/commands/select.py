@@ -5,13 +5,13 @@ import backoff
 import rich
 from documented import DocumentedError
 from jira import JIRA, JIRAError, Issue
-from typer import Argument, Context, Option
+from typer import Argument
 
 from jirajumper.cache import (
-    retrieve, store,
+    store,
 )
 from jirajumper.cache.cache import JIRAField, JiraCache, JeevesJiraContext
-from jirajumper.client import issue_url, jira
+from jirajumper.client import issue_url
 from jirajumper.models import (
     OutputFormat,
 )
@@ -152,12 +152,17 @@ def jump(
             rich.print(f'  - {field.human_name}: {field_value}')
 
     else:
-        print(json.dumps(
-            issue_to_json(
-                issue=issue,
-                available_fields=cache.issue_fields,
+        print(
+            json.dumps(
+                {
+                    field.human_name: field.retrieve(
+                        issue=issue,
+                        field_key_by_name=context.obj.field_key_by_name,
+                    )
+                    for field in context.obj.fields
+                },
+                indent=2,
             ),
-            indent=2,
-        ))
+        )
 
     return issue
