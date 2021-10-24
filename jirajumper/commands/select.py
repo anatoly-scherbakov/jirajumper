@@ -1,16 +1,16 @@
 import json
-from typing import Any, Dict, Optional, List
+from typing import Optional
 
 import backoff
 import rich
 from documented import DocumentedError
-from jira import JIRA, JIRAError, Issue
+from jira import JIRA, JIRAError
 from typer import Argument
 
 from jirajumper.cache import (
     store,
 )
-from jirajumper.cache.cache import JIRAField, JiraCache, JeevesJiraContext
+from jirajumper.cache.cache import JeevesJiraContext
 from jirajumper.client import issue_url
 from jirajumper.models import (
     OutputFormat,
@@ -63,54 +63,6 @@ class NoIssueSelected(DocumentedError):
 
         jj jump PROJ-123
     """
-
-
-FIELD_ALIASES = {
-    'epic-link': 'epic',
-    'issuetype': 'type',
-    'parent-link': 'parent',
-    'version': 'fixVersions',
-}
-
-
-def find_alias_for(field_name: str) -> str:
-    return FIELD_ALIASES.get(field_name, field_name)
-
-
-def issue_to_json(
-    issue: Issue,
-    available_fields: List[JIRAField],
-) -> Dict[str, Any]:   # type: ignore
-    """
-    Represent a JIRA issue as a JSON serializable dict.
-
-    Take care of field names and (by default) strip null values.
-    """
-    available_field_by_id = {
-        field.id: field
-        for field in available_fields
-    }
-
-    return {
-        find_alias_for(
-            available_field_by_id[field_name].canonical_name,
-        ): field_value
-        for field_name, field_value
-        in issue.raw['fields'].items()
-        if field_value is not None
-    }
-
-
-def prettify_fields(  # type: ignore
-    cache: JiraCache,
-    fields: Dict[str, Any],
-):
-    return {
-        cache.issue_fields[field_name].cli_name: field_description
-        for field_name, field_description
-        in fields.items()
-        if field_description is not None
-    }
 
 
 @backoff.on_exception(backoff.expo, JIRAError, max_time=5)

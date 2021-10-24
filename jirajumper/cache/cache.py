@@ -1,9 +1,7 @@
-import re
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Optional, List
+from typing import Optional
 
-import stringcase
 from jira import JIRA, Issue
 from pydantic import BaseModel, Field
 from typer import Context
@@ -20,45 +18,10 @@ class IssueFieldSchema(BaseModel):
     system: Optional[str] = None
 
 
-class JIRAField(BaseModel):
-    """Description of a JIRA issue field."""
-
-    id: str
-    key: str
-    name: str
-    custom: bool
-    orderable: bool
-    navigable: bool
-    searchable: bool
-    clause_names: List[str] = Field(alias='clauseNames')
-    field_schema: Optional[IssueFieldSchema] = Field(None, alias='schema')
-
-    @property
-    def canonical_name(self):
-        """
-        Generate canonical name of the field.
-
-        That name will be used to render field names in CLI.
-        """
-        if not self.custom:
-            return self.id
-
-        name = self.name.strip()
-        name = re.sub(r'[\[\]]', '', name)
-
-        name = stringcase.spinalcase(name)
-
-        name = name.strip('-')
-        name = name.replace('--', '-')
-
-        return name
-
-
 class JiraCache(BaseModel):
     """Cached JIRA configuration."""
 
     selected_issue_key: Optional[str] = None
-    issue_fields: List[JIRAField] = Field(default_factory=list)
 
 
 @dataclass
