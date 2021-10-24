@@ -74,7 +74,14 @@ class UpdateCommand(TyperCommand):
 
 app.command()(jump)
 app.command(name='list')(list_issues)
-app.command()(clone)
+
+app.command(
+    cls=UpdateCommand,
+    context_settings={
+        'ignore_unknown_options': True,
+    },
+)(clone)
+
 app.command(
     cls=UpdateCommand,
     context_settings={
