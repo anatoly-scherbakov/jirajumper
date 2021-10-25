@@ -7,7 +7,7 @@ from jirajumper.commands.update import JIRAUpdateFailed
 
 def clone(
     context: JeevesJiraContext,
-    **kwargs: str,
+    **options: str,
 ):
     """Clone a JIRA issue."""
     parent_issue = context.obj.current_issue
@@ -16,11 +16,7 @@ def clone(
         for field in context.obj.fields
     }
 
-    update_fields = {
-        update_field.jira_name: kwargs[update_field.human_name]
-        for update_field in context.obj.fields
-        if kwargs.get(update_field.human_name)
-    }
+    update_fields = context.obj.fields.match_options(options)
 
     new_issue_fields = {
         **parent_issue_fields,

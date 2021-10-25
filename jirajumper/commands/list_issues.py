@@ -3,16 +3,12 @@ import rich
 from jirajumper.cache.cache import JeevesJiraContext
 
 
-def list_issues(
+def list_issues(    # noqa: WPS210
     context: JeevesJiraContext,
-    **kwargs,
+    **options,
 ):
     """List JIRA issues by criteria."""
-    fields_and_values = [
-        (applicable_field, kwargs[applicable_field.human_name])
-        for applicable_field in context.obj.fields
-        if kwargs.get(applicable_field.human_name)
-    ]
+    fields_and_values = context.obj.fields.match_options(options)
 
     expressions = [
         field.to_jql(expression)

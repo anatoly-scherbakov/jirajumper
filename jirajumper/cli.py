@@ -13,7 +13,7 @@ from jirajumper.commands.clone import clone
 from jirajumper.commands.list_issues import list_issues
 from jirajumper.commands.select import jump
 from jirajumper.commands.update import update
-from jirajumper.fields import FIELDS, JiraField
+from jirajumper.fields import FIELDS, JiraField, JiraFieldsRepository
 from jirajumper.models import OutputFormat
 
 app = Typer(
@@ -54,7 +54,7 @@ def global_options(
     context.obj = GlobalOptions(
         output_format=format,
         jira=jira(),
-        fields=list(resolved_fields),
+        fields=JiraFieldsRepository(resolved_fields),
         cache_path=cache_path,
     )
 
@@ -81,9 +81,9 @@ class AutoOptionsCommand(TyperCommand):
         ]
 
         existing_params = list(filterfalse(
-            lambda param: (
-                isinstance(param, TyperArgument) and
-                param.name == 'kwargs'
+            lambda existing_param: (
+                isinstance(existing_param, TyperArgument) and
+                existing_param.name == 'options'
             ),
             kwargs.get('params', []),
         ))

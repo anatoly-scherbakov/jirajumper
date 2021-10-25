@@ -1,6 +1,6 @@
 import re
 from dataclasses import asdict, dataclass
-from typing import Protocol, Tuple, TypeVar, Union, Optional
+from typing import Optional, Protocol, Tuple, TypeVar, Union
 
 from jira import Issue
 

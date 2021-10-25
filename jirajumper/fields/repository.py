@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from more_itertools import first
 
@@ -30,3 +30,19 @@ class JiraFieldsRepository(List[JiraField]):
             lambda field: field.is_writable and field.is_mutable,
             self,
         ))
+
+    def match_options(
+        self,
+        options: Dict[str, str],
+    ) -> List[Tuple[JiraField, str]]:
+        """
+        Match fields in the repo with CLI options provided by the user.
+
+        Returns a list of `(JiraField, str)` pairs, where `str` is the value
+        assigned to this field by the user.
+        """
+        return [
+            (field, options[field.human_name])
+            for field in self
+            if options.get(field.human_name)
+        ]
