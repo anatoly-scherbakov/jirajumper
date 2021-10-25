@@ -74,7 +74,7 @@ class AutoOptionsCommand(TyperCommand):
 
         custom_options = [
             click.Option(
-                [f'--{field.human_name}'],
+                [f'--{field.human_name.replace("_", "-")}'],
                 help=field.description,
             )
             for field in fields

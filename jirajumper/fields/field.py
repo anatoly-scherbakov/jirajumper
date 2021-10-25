@@ -1,3 +1,4 @@
+import operator
 import re
 from dataclasses import asdict, dataclass
 from typing import Optional, Protocol, Tuple, TypeVar, Union
@@ -61,10 +62,7 @@ class JiraField:
     def retrieve(self, issue: Issue):
         """Retrieve the native field value from given issue."""
         return self.from_jira(
-            getattr(
-                issue.fields,
-                self.jira_name,
-            ),
+            operator.attrgetter(self.jira_name)(issue.fields)
         )
 
     def store(self, human_value: HumanValue) -> Tuple[str, JiraValue]:

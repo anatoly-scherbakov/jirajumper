@@ -44,6 +44,18 @@ STATUS = JiraField(
 )
 
 
+STATUS_CATEGORY = JiraField(
+    jira_name='status.statusCategory',
+    human_name='status_category',
+    jql_name='statusCategory',
+    description='Issue status category: "To Do", "In Progress" and "Done".',
+
+    is_mutable=False,
+    to_jira=NotImplemented,
+    from_jira=get_name,
+)
+
+
 TYPE = JiraField(
     jira_name='issuetype',
     human_name='type',
@@ -85,7 +97,10 @@ FIELDS = JiraFieldsRepository([
     SUMMARY,
     ASSIGNEE,
     VERSION,
+
     STATUS,
+    STATUS_CATEGORY,
+
     TYPE,
     EPIC_LINK,
     PROJECT,

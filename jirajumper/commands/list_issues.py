@@ -1,21 +1,37 @@
+from typing import Dict
+
 import rich
 
 from jirajumper.cache.cache import JeevesJiraContext
+from jirajumper.fields import JiraFieldsRepository
+from jirajumper.fields.field import ResolvedField
 
 
-def list_issues(    # noqa: WPS210
-    context: JeevesJiraContext,
-    **options,
+def generate_jql(
+    fields: JiraFieldsRepository,
+    options: Dict[str, str],
 ):
-    """List JIRA issues by criteria."""
-    fields_and_values = context.obj.fields.match_options(options)
+    """Generate JQL string."""
+    fields_and_values = fields.match_options(options)
 
+    field: ResolvedField
     expressions = [
         field.to_jql(expression)
         for field, expression in fields_and_values
     ]
 
-    jql = ' AND '.join(expressions)
+    return ' AND '.join(expressions)
+
+
+def list_issues(
+    context: JeevesJiraContext,
+    **options,
+):
+    """List JIRA issues by criteria."""
+    jql = generate_jql(
+        fields=context.obj.fields,
+        options=options,
+    )
     issues = context.obj.jira.search_issues(jql, maxResults=None)
 
     for issue in issues:
