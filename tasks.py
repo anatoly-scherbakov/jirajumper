@@ -45,3 +45,15 @@ def publish(ctx: Context):
 def inc(ctx: Context):
     """Increment version number."""
     ctx.run('poetry version patch', pty=True)
+
+
+@task
+def new_branch(
+    ctx: Context,
+    name: str,
+):
+    """Create a new branch with the given name and create PR."""
+    ctx.run(f'git checkout -b {name}', pty=True)
+    ctx.run('poetry version patch', pty=True)
+    ctx.run(f'git commit -a -m "New branch: {name}"', pty=True)
+    ctx.run(f'gh pr create --fill --head')
