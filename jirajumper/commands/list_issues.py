@@ -1,5 +1,3 @@
-import os
-
 from jirajumper.cache.cache import JeevesJiraContext
 
 

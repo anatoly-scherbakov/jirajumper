@@ -1,4 +1,4 @@
-from dataclasses import dataclass, replace, asdict
+from dataclasses import asdict, dataclass
 from typing import Protocol, Tuple, TypeVar, Union
 
 from jira import Issue

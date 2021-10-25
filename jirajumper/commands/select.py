@@ -63,7 +63,7 @@ class NoIssueSelected(DocumentedError):
 @backoff.on_exception(backoff.expo, JIRAError, max_time=5)
 def jump(
     context: JeevesJiraContext,
-    specifier: Optional[str] = Argument(None),    # noqa: WPS404
+    specifier: Optional[str] = Argument(None),    # noqa: WPS404, B008
 ):
     """Select a Jira issue to work with."""
     client = context.obj.jira

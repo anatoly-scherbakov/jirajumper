@@ -1,14 +1,12 @@
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict
 
 import rich
 from documented import DocumentedError
 from jira import JIRAError
-from typer import Option
 
 from jirajumper.cache.cache import JeevesJiraContext
 from jirajumper.fields import JiraFieldsRepository
-from jirajumper.models import FieldKeyByName
 
 
 @dataclass

@@ -6,7 +6,7 @@ from pathlib import Path
 import click
 from rich.traceback import install
 from typer import Context, Option, Typer
-from typer.core import TyperCommand, TyperArgument
+from typer.core import TyperArgument, TyperCommand
 
 from jirajumper.cache.cache import GlobalOptions, field_key_by_name
 from jirajumper.client import jira
@@ -17,7 +17,6 @@ from jirajumper.commands.select import jump
 from jirajumper.commands.update import update
 from jirajumper.fields import FIELDS, JiraField
 from jirajumper.models import OutputFormat
-
 
 app = Typer(
     help='Manage JIRA issues.',
