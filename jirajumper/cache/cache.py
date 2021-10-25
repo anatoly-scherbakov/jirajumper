@@ -1,6 +1,6 @@
-import json
 from dataclasses import dataclass
 from functools import cached_property
+from logging import Logger
 from pathlib import Path
 from typing import Optional
 
@@ -43,6 +43,7 @@ def field_key_by_name(jira: JIRA) -> FieldKeyByName:
 class GlobalOptions:
     """Global jeeves-jira configuration options."""
 
+    logger: Logger
     output_format: OutputFormat
     jira: JIRA
     cache_path: Path

@@ -32,6 +32,7 @@ def list_issues(
         fields=context.obj.fields,
         options=options,
     )
+    context.obj.logger.info('JQL: `%s`', jql)
     issues = context.obj.jira.search_issues(jql, maxResults=None)
 
     for issue in issues:

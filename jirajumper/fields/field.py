@@ -62,7 +62,7 @@ class JiraField:
     def retrieve(self, issue: Issue):
         """Retrieve the native field value from given issue."""
         return self.from_jira(
-            operator.attrgetter(self.jira_name)(issue.fields)
+            operator.attrgetter(self.jira_name)(issue.fields),
         )
 
     def store(self, human_value: HumanValue) -> Tuple[str, JiraValue]:
@@ -129,7 +129,7 @@ class ResolvedField(JiraField):
         ))
         is_multiple = len(search_values) > 1
 
-        operator = _jql_operator(
+        jql_operator = _jql_operator(
             is_multiple=is_multiple,
             is_positive=is_positive,
         )
@@ -142,8 +142,8 @@ class ResolvedField(JiraField):
         if is_multiple:
             jql_values = f'({jql_values})'
 
-        field_name = self.unresolved_jira_name
+        field_name = self.jql_name or self.unresolved_jira_name
         if ' ' in field_name:
             field_name = f'"{field_name}"'
 
-        return f'{field_name} {operator} {jql_values}'
+        return f'{field_name} {jql_operator} {jql_values}'
