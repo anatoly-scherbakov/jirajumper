@@ -39,3 +39,9 @@ def fmt(ctx: Context):
 def publish(ctx: Context):
     """Publish to PyPI."""
     ctx.run('poetry publish --build', pty=True)
+
+
+@task
+def inc(ctx: Context):
+    """Increment version number."""
+    ctx.run('poetry version patch', pty=True)
