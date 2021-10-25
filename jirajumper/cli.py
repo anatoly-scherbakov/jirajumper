@@ -1,3 +1,5 @@
+import operator
+from functools import partial
 from pathlib import Path
 
 import click
@@ -5,13 +7,13 @@ from rich.traceback import install
 from typer import Context, Option, Typer
 from typer.core import TyperCommand
 
-from jirajumper.cache.cache import GlobalOptions
+from jirajumper.cache.cache import GlobalOptions, field_key_by_name
 from jirajumper.client import jira
 from jirajumper.commands.clone import clone
 from jirajumper.commands.list_issues import list_issues
 from jirajumper.commands.select import jump
 from jirajumper.commands.update import update
-from jirajumper.fields import FIELDS
+from jirajumper.fields import FIELDS, JiraField
 from jirajumper.models import OutputFormat
 
 
@@ -36,23 +38,26 @@ def global_options(
 ):
     """Configure global options valid for most of jeeves-jira commands."""
     install(show_locals=False)
+
+    client = jira()
+    key_by_name = field_key_by_name(
+        jira=client,
+    )
+
+    resolved_fields = map(
+        partial(
+            JiraField.resolve,
+            field_key_by_name=key_by_name,
+        ),
+        FIELDS,
+    )
+
     context.obj = GlobalOptions(
         output_format=format,
         jira=jira(),
-        fields=FIELDS,
+        fields=list(resolved_fields),
         cache_path=cache_path,
     )
-
-
-EDITABLE_FIELDS = frozenset({
-    'epic',
-    'type',
-    'project',
-    'version',
-    'assignee',
-    'description',
-    'parent',
-})
 
 
 class UpdateCommand(TyperCommand):

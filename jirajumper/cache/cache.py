@@ -26,6 +26,19 @@ class JiraCache(BaseModel):
     selected_issue_key: Optional[str] = None
 
 
+def field_key_by_name(jira: JIRA) -> FieldKeyByName:
+    """
+    Map field names to keys.
+
+    This is useful for `custom*` and the like: the field key can vary
+    among installations but the canonical name helps us to find that key.
+    """
+    return {
+        field['name']: field['key']
+        for field in jira.fields()
+    }
+
+
 @dataclass
 class GlobalOptions:
     """Global jeeves-jira configuration options."""

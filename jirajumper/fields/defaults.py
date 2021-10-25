@@ -67,8 +67,16 @@ DESCRIPTION = JiraField(
     description='JIRA task description body.',
 )
 
+ASSIGNEE = JiraField(
+    jira_name='assignee',
+    human_name='assignee',
+    description='Person the issue is assigned to.',
+    from_jira=lambda assignee: assignee and assignee.displayName,
+    to_jira=lambda assignee_name: {'name': assignee_name},
+)
+
 
 # TODO This should be configurable in configuration files or somehow else.
 FIELDS = JiraFieldsRepository([
-    VERSION, SUMMARY, STATUS, TYPE, EPIC_LINK, PROJECT, DESCRIPTION,
+    SUMMARY, VERSION, STATUS, TYPE, EPIC_LINK, PROJECT, ASSIGNEE, DESCRIPTION,
 ])

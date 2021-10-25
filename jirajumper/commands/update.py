@@ -21,15 +21,12 @@ class JIRAUpdateFailed(DocumentedError):
 
     errors: Dict[str, str]
     fields: JiraFieldsRepository
-    field_key_by_name: FieldKeyByName
 
     @property
     def formatted_errors(self) -> str:
         """Format the error list received from JIRA."""
         field_per_resolved_jira_name = {
-            field.resolve_jira_field_name(
-                field_key_by_name=self.field_key_by_name,
-            ): field
+            field.jira_name: field
             for field in self.fields
         }
 
@@ -64,10 +61,7 @@ def update(
         rich.print(f'  - {print_field.human_name} ≔ {human_value}')
 
     issue_fields = dict([
-        store_field.store(
-            human_value=human_value,
-            field_key_by_name=context.obj.field_key_by_name,
-        )
+        store_field.store(human_value=human_value)
         for store_field, human_value in fields_and_values
     ])
 
@@ -77,7 +71,6 @@ def update(
         raise JIRAUpdateFailed(
             errors=err.response.json().get('errors', {}),
             fields=context.obj.fields,
-            field_key_by_name=context.obj.field_key_by_name,
         ) from err
 
     rich.print('Updated!')

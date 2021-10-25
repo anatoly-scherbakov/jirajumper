@@ -12,19 +12,12 @@ def clone(
     """Clone a JIRA issue."""
     parent_issue = context.obj.current_issue
     parent_issue_fields = {
-        field.resolve_jira_field_name(
-            field_key_by_name=context.obj.field_key_by_name,
-        ): field.retrieve(
-            issue=parent_issue,
-            field_key_by_name=context.obj.field_key_by_name,
-        )
+        field.jira_name: field.retrieve(issue=parent_issue)
         for field in context.obj.fields
     }
 
     update_fields = {
-        update_field.resolve_jira_field_name(
-            field_key_by_name=context.obj.field_key_by_name,
-        ): kwargs[update_field.human_name]
+        update_field.jira_name: kwargs[update_field.human_name]
         for update_field in context.obj.fields
         if kwargs.get(update_field.human_name)
     }
@@ -40,7 +33,6 @@ def clone(
         raise JIRAUpdateFailed(
             errors=err.response.json().get('errors', {}),
             fields=context.obj.fields,
-            field_key_by_name=context.obj.field_key_by_name,
         ) from err
 
     rich.print(issue)

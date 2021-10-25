@@ -97,20 +97,14 @@ def jump(
         rich.print(issue_url(client.server_url, issue.key))
 
         for print_field in context.obj.fields:
-            field_value = print_field.retrieve(
-                issue=issue,
-                field_key_by_name=context.obj.field_key_by_name,
-            )
+            field_value = print_field.retrieve(issue=issue)
             rich.print(f'  - {print_field.human_name}: {field_value}')
 
     else:
         echo(
             json.dumps(
                 {
-                    json_field.human_name: json_field.retrieve(
-                        issue=issue,
-                        field_key_by_name=context.obj.field_key_by_name,
-                    )
+                    json_field.human_name: json_field.retrieve(issue=issue)
                     for json_field in context.obj.fields
                 },
                 indent=2,

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace, asdict
 from typing import Protocol, Tuple, TypeVar, Union
 
 from jira import Issue
@@ -46,38 +46,46 @@ class JiraField:
     to_jira: Union[ToJira, NotImplementedType] = identity
     from_jira: FromJira = identity
 
-    def resolve_jira_field_name(self, field_key_by_name: FieldKeyByName) -> str:
-        """Resolve JIRA field name."""
-        if isinstance(self.jira_name, str):
-            return self.jira_name
-
-        if isinstance(self.jira_name, FieldByName):
-            return field_key_by_name[self.jira_name.readable_name]
-
-        raise ValueError(f'`{self.jira_name}` is not a valid JIRA field name.')
-
-    def retrieve(self, issue: Issue, field_key_by_name: FieldKeyByName):
+    def retrieve(self, issue: Issue):
         """Retrieve the native field value from given issue."""
         return self.from_jira(
             getattr(
                 issue.fields,
-                self.resolve_jira_field_name(
-                    field_key_by_name=field_key_by_name,
-                ),
+                self.jira_name,
             ),
         )
 
-    def store(
-        self,
-        human_value: HumanValue,
-        field_key_by_name: FieldKeyByName,
-    ) -> Tuple[str, JiraValue]:
+    def store(self, human_value: HumanValue) -> Tuple[str, JiraValue]:
         """Convert the readable value into JIRA native form."""
-        jira_name = self.resolve_jira_field_name(
-            field_key_by_name=field_key_by_name,
-        )
-        return jira_name, self.to_jira(human_value)
+        return self.jira_name, self.to_jira(human_value)
 
     def is_writable(self):
         """Find out if this field is writable."""
         return self.to_jira is not NotImplemented
+
+    def resolve(self, field_key_by_name: FieldKeyByName) -> 'ResolvedField':
+        """Resolve jira_name."""
+        if isinstance(self.jira_name, str):
+            jira_name = self.jira_name
+
+        elif isinstance(self.jira_name, FieldByName):
+            jira_name = field_key_by_name[self.jira_name.readable_name]
+
+        else:
+            raise ValueError(
+                f'`{self.jira_name}` is not a valid JIRA field name.',
+            )
+
+        field_dict = {
+            **asdict(self),
+            **{
+                'jira_name': jira_name,
+            },
+        }
+
+        return ResolvedField(**field_dict)
+
+
+@dataclass(frozen=True)
+class ResolvedField(JiraField):
+    """JIRA field description with resolved field name."""
