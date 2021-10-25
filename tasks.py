@@ -56,4 +56,4 @@ def new_branch(
     ctx.run(f'git checkout -b {name}', pty=True)
     ctx.run('poetry version patch', pty=True)
     ctx.run(f'git commit -a -m "New branch: {name}"', pty=True)
-    ctx.run(f'gh pr create --fill --head')
+    ctx.run(f'gh pr create --fill --head {name}', pty=True)
