@@ -23,3 +23,10 @@ class JiraFieldsRepository(List[JiraField]):
             JiraField.is_writable,
             self,
         ))
+
+    def mutable(self) -> 'JiraFieldsRepository':
+        """Show only fields that are mutable."""
+        return JiraFieldsRepository(filter(
+            lambda field: field.is_writable and field.is_mutable,
+            self,
+        ))

@@ -61,14 +61,25 @@ def global_options(
     )
 
 
-class UpdateCommand(TyperCommand):
+class AutoOptionsCommand(TyperCommand):
+    writable_only = False
+    mutable_only = False
+
     def __init__(self, **kwargs):
+        fields = FIELDS
+
+        if self.mutable_only:
+            fields = fields.mutable()
+
+        if self.writable_only:
+            fields = fields.writable()
+
         custom_options = [
             click.Option(
                 [f'--{field.human_name}'],
                 help=field.description,
             )
-            for field in FIELDS.writable()
+            for field in fields
         ]
 
         existing_params = list(filterfalse(
@@ -86,11 +97,19 @@ class UpdateCommand(TyperCommand):
         super().__init__(**kwargs)
 
 
+class CloneCommand(AutoOptionsCommand):
+    writable_only = True
+
+
+class UpdateCommand(AutoOptionsCommand):
+    mutable_only = True
+
+
 app.command()(jump)
 app.command(name='list')(list_issues)
 
 app.command(
-    cls=UpdateCommand,
+    cls=CloneCommand,
     context_settings={
         'ignore_unknown_options': True,
     },

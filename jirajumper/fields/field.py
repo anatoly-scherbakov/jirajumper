@@ -43,6 +43,8 @@ class JiraField:
     human_name: str
     description: str
 
+    is_mutable: bool = True
+
     to_jira: Union[ToJira, NotImplementedType] = identity
     from_jira: FromJira = identity
 

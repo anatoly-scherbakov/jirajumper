@@ -37,6 +37,7 @@ STATUS = JiraField(
     description='Issue status.',
 
     # It is impossible to set issue status directly in update() operation.
+    is_mutable=False,
     to_jira=NotImplemented,
     from_jira=get_name,
 )
@@ -57,7 +58,8 @@ PROJECT = JiraField(
     description='JIRA Project.',
 
     # It is impossible to easily migrate across projects.
-    to_jira=NotImplemented,
+    is_mutable=False,
+    to_jira=lambda project_key: {'key': project_key},
     from_jira=get_name,
 )
 
@@ -72,14 +74,17 @@ ASSIGNEE = JiraField(
     human_name='assignee',
     description='Person the issue is assigned to.',
     from_jira=lambda assignee: assignee and assignee.displayName,
-    to_jira=lambda assignee_name: {'name': assignee_name},
+    to_jira=NotImplemented,
+    is_mutable=False,
 )
 
 
 # TODO This should be configurable in configuration files or somehow else.
 FIELDS = JiraFieldsRepository([
     SUMMARY,
-    VERSION, STATUS,
+    ASSIGNEE,
+    VERSION,
+    STATUS,
     TYPE,
     EPIC_LINK,
     PROJECT,
