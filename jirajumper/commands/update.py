@@ -1,13 +1,13 @@
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Optional
 
 import rich
 from documented import DocumentedError
-from jira import JIRAError
+from jira import JIRAError, JIRA
+from typer import Option
 
 from jirajumper.cache.cache import JeevesJiraContext
 from jirajumper.fields import JiraFieldsRepository
-from jirajumper.models import FieldKeyByName
 
 
 @dataclass
@@ -21,15 +21,12 @@ class JIRAUpdateFailed(DocumentedError):
 
     errors: Dict[str, str]
     fields: JiraFieldsRepository
-    field_key_by_name: FieldKeyByName
 
     @property
     def formatted_errors(self) -> str:
         """Format the error list received from JIRA."""
         field_per_resolved_jira_name = {
-            field.resolve_jira_field_name(
-                field_key_by_name=self.field_key_by_name,
-            ): field
+            field.jira_name: field
             for field in self.fields
         }
 
@@ -44,8 +41,23 @@ class JIRAUpdateFailed(DocumentedError):
         ])
 
 
+def assign(jira: JIRA, key: str, assignee: str):
+    """Assign issue to a person."""
+    rich.print(f'Assigning {key} to {assignee}...')
+    jira.assign_issue(
+        issue=key,
+        assignee=assignee,
+    )
+
+    rich.print('Assigned!')
+
+
 def update(
     context: JeevesJiraContext,
+    assignee: Optional[str] = Option(
+        None,
+        help='Assignee display name or email address. Supports fuzzy search.',
+    ),
     **kwargs: str,
 ):
     """
@@ -64,10 +76,7 @@ def update(
         rich.print(f'  - {print_field.human_name} ≔ {human_value}')
 
     issue_fields = dict([
-        store_field.store(
-            human_value=human_value,
-            field_key_by_name=context.obj.field_key_by_name,
-        )
+        store_field.store(human_value=human_value)
         for store_field, human_value in fields_and_values
     ])
 
@@ -77,7 +86,13 @@ def update(
         raise JIRAUpdateFailed(
             errors=err.response.json().get('errors', {}),
             fields=context.obj.fields,
-            field_key_by_name=context.obj.field_key_by_name,
         ) from err
+
+    if assignee is not None:
+        assign(
+            jira=context.obj.jira,
+            key=context.obj.current_issue.key,
+            assignee=assignee,
+        )
 
     rich.print('Updated!')

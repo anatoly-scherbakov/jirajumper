@@ -1,19 +1,20 @@
+from functools import partial
+from itertools import filterfalse
 from pathlib import Path
 
 import click
 from rich.traceback import install
 from typer import Context, Option, Typer
-from typer.core import TyperCommand
+from typer.core import TyperArgument, TyperCommand
 
-from jirajumper.cache.cache import GlobalOptions
+from jirajumper.cache.cache import GlobalOptions, field_key_by_name
 from jirajumper.client import jira
 from jirajumper.commands.clone import clone
 from jirajumper.commands.list_issues import list_issues
 from jirajumper.commands.select import jump
 from jirajumper.commands.update import update
-from jirajumper.fields import FIELDS
+from jirajumper.fields import FIELDS, JiraField
 from jirajumper.models import OutputFormat
-
 
 app = Typer(
     help='Manage JIRA issues.',
@@ -36,48 +37,93 @@ def global_options(
 ):
     """Configure global options valid for most of jeeves-jira commands."""
     install(show_locals=False)
+
+    client = jira()
+    key_by_name = field_key_by_name(
+        jira=client,
+    )
+
+    resolved_fields = map(
+        partial(
+            JiraField.resolve,
+            field_key_by_name=key_by_name,
+        ),
+        FIELDS,
+    )
+
     context.obj = GlobalOptions(
         output_format=format,
         jira=jira(),
-        fields=FIELDS,
+        fields=list(resolved_fields),
         cache_path=cache_path,
     )
 
 
-EDITABLE_FIELDS = frozenset({
-    'epic',
-    'type',
-    'project',
-    'version',
-    'assignee',
-    'description',
-    'parent',
-})
+class AutoOptionsCommand(TyperCommand):
+    writable_only = False
+    mutable_only = False
 
-
-class UpdateCommand(TyperCommand):
     def __init__(self, **kwargs):
+        fields = FIELDS
+
+        if self.mutable_only:
+            fields = fields.mutable()
+
+        if self.writable_only:
+            fields = fields.writable()
+
         custom_options = [
             click.Option(
                 [f'--{field.human_name}'],
                 help=field.description,
             )
-            for field in FIELDS.writable()
+            for field in fields
         ]
 
+        existing_params = list(filterfalse(
+            lambda param: (
+                isinstance(param, TyperArgument) and
+                param.name == 'kwargs'
+            ),
+            kwargs.get('params', []),
+        ))
+
         kwargs.update(
-            params=custom_options,
+            params=existing_params + custom_options,
         )
 
         super().__init__(**kwargs)
 
 
+class CloneCommand(AutoOptionsCommand):
+    writable_only = True
+
+
+class UpdateCommand(AutoOptionsCommand):
+    mutable_only = True
+
+
 app.command()(jump)
-app.command(name='list')(list_issues)
-app.command()(clone)
+
+app.command(
+    cls=CloneCommand,
+    context_settings={
+        'ignore_unknown_options': True,
+    },
+)(clone)
+
 app.command(
     cls=UpdateCommand,
     context_settings={
         'ignore_unknown_options': True,
     },
 )(update)
+
+
+app.command(
+    cls=AutoOptionsCommand,
+    context_settings={
+        'ignore_unknown_options': True,
+    },
+    name='list',
+)(list_issues)

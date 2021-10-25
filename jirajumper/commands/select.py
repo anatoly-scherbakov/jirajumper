@@ -63,7 +63,7 @@ class NoIssueSelected(DocumentedError):
 @backoff.on_exception(backoff.expo, JIRAError, max_time=5)
 def jump(
     context: JeevesJiraContext,
-    specifier: Optional[str] = Argument(None),    # noqa: WPS404
+    specifier: Optional[str] = Argument(None),    # noqa: WPS404, B008
 ):
     """Select a Jira issue to work with."""
     client = context.obj.jira
@@ -97,20 +97,14 @@ def jump(
         rich.print(issue_url(client.server_url, issue.key))
 
         for print_field in context.obj.fields:
-            field_value = print_field.retrieve(
-                issue=issue,
-                field_key_by_name=context.obj.field_key_by_name,
-            )
+            field_value = print_field.retrieve(issue=issue)
             rich.print(f'  - {print_field.human_name}: {field_value}')
 
     else:
         echo(
             json.dumps(
                 {
-                    json_field.human_name: json_field.retrieve(
-                        issue=issue,
-                        field_key_by_name=context.obj.field_key_by_name,
-                    )
+                    json_field.human_name: json_field.retrieve(issue=issue)
                     for json_field in context.obj.fields
                 },
                 indent=2,

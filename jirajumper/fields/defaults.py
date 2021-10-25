@@ -10,6 +10,7 @@ get_name = operator.attrgetter('name')
 
 VERSION = JiraField(
     jira_name='fixVersions',
+    jql_name='fixVersion',
     human_name='version',
     description='Software product version the issue is attached to.',
 
@@ -37,6 +38,7 @@ STATUS = JiraField(
     description='Issue status.',
 
     # It is impossible to set issue status directly in update() operation.
+    is_mutable=False,
     to_jira=NotImplemented,
     from_jira=get_name,
 )
@@ -57,7 +59,8 @@ PROJECT = JiraField(
     description='JIRA Project.',
 
     # It is impossible to easily migrate across projects.
-    to_jira=NotImplemented,
+    is_mutable=False,
+    to_jira=lambda project_key: {'key': project_key},
     from_jira=get_name,
 )
 
@@ -67,8 +70,24 @@ DESCRIPTION = JiraField(
     description='JIRA task description body.',
 )
 
+ASSIGNEE = JiraField(
+    jira_name='assignee',
+    human_name='assignee',
+    description='Person the issue is assigned to.',
+    from_jira=lambda assignee: assignee and assignee.displayName,
+    to_jira=NotImplemented,
+    is_mutable=False,
+)
+
 
 # TODO This should be configurable in configuration files or somehow else.
 FIELDS = JiraFieldsRepository([
-    VERSION, SUMMARY, STATUS, TYPE, EPIC_LINK, PROJECT, DESCRIPTION,
+    SUMMARY,
+    ASSIGNEE,
+    VERSION,
+    STATUS,
+    TYPE,
+    EPIC_LINK,
+    PROJECT,
+    DESCRIPTION,
 ])
