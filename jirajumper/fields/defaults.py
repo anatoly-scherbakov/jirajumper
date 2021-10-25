@@ -78,5 +78,7 @@ ASSIGNEE = JiraField(
 
 # TODO This should be configurable in configuration files or somehow else.
 FIELDS = JiraFieldsRepository([
-    SUMMARY, VERSION, STATUS, TYPE, EPIC_LINK, PROJECT, ASSIGNEE, DESCRIPTION,
+    SUMMARY, VERSION, STATUS, TYPE, EPIC_LINK, PROJECT,
+    # ASSIGNEE,
+    DESCRIPTION,
 ])

@@ -1,14 +1,16 @@
 import operator
 from functools import partial
+from itertools import filterfalse
 from pathlib import Path
 
 import click
 from rich.traceback import install
 from typer import Context, Option, Typer
-from typer.core import TyperCommand
+from typer.core import TyperCommand, TyperArgument
 
 from jirajumper.cache.cache import GlobalOptions, field_key_by_name
 from jirajumper.client import jira
+from jirajumper.commands.assign import assign
 from jirajumper.commands.clone import clone
 from jirajumper.commands.list_issues import list_issues
 from jirajumper.commands.select import jump
@@ -70,8 +72,16 @@ class UpdateCommand(TyperCommand):
             for field in FIELDS.writable()
         ]
 
+        existing_params = list(filterfalse(
+            lambda param: (
+                isinstance(param, TyperArgument) and
+                param.name == 'kwargs'
+            ),
+            kwargs.get('params', []),
+        ))
+
         kwargs.update(
-            params=custom_options,
+            params=existing_params + custom_options,
         )
 
         super().__init__(**kwargs)
@@ -93,3 +103,5 @@ app.command(
         'ignore_unknown_options': True,
     },
 )(update)
+
+app.command()(assign)
