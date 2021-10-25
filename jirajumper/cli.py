@@ -1,4 +1,3 @@
-import operator
 from functools import partial
 from itertools import filterfalse
 from pathlib import Path
@@ -10,7 +9,6 @@ from typer.core import TyperArgument, TyperCommand
 
 from jirajumper.cache.cache import GlobalOptions, field_key_by_name
 from jirajumper.client import jira
-from jirajumper.commands.assign import assign
 from jirajumper.commands.clone import clone
 from jirajumper.commands.list_issues import list_issues
 from jirajumper.commands.select import jump
@@ -121,5 +119,3 @@ app.command(
         'ignore_unknown_options': True,
     },
 )(update)
-
-app.command()(assign)

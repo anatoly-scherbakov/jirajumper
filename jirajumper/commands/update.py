@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Optional
 
 import rich
 from documented import DocumentedError
-from jira import JIRAError
+from jira import JIRAError, JIRA
+from typer import Option
 
 from jirajumper.cache.cache import JeevesJiraContext
 from jirajumper.fields import JiraFieldsRepository
@@ -40,8 +41,23 @@ class JIRAUpdateFailed(DocumentedError):
         ])
 
 
+def assign(jira: JIRA, key: str, assignee: str):
+    """Assign issue to a person."""
+    rich.print(f'Assigning {key} to {assignee}...')
+    jira.assign_issue(
+        issue=key,
+        assignee=assignee,
+    )
+
+    rich.print('Assigned!')
+
+
 def update(
     context: JeevesJiraContext,
+    assignee: Optional[str] = Option(
+        None,
+        help='Assignee display name or email address. Supports fuzzy search.',
+    ),
     **kwargs: str,
 ):
     """
@@ -71,5 +87,12 @@ def update(
             errors=err.response.json().get('errors', {}),
             fields=context.obj.fields,
         ) from err
+
+    if assignee is not None:
+        assign(
+            jira=context.obj.jira,
+            key=context.obj.current_issue.key,
+            assignee=assignee,
+        )
 
     rich.print('Updated!')
