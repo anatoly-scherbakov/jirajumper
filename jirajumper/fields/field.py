@@ -1,5 +1,6 @@
+import re
 from dataclasses import asdict, dataclass
-from typing import Protocol, Tuple, TypeVar, Union
+from typing import Protocol, Tuple, TypeVar, Union, Optional
 
 from jira import Issue
 
@@ -30,6 +31,14 @@ class FromJira(Protocol):
         raise NotImplementedError()
 
 
+class ToJQL(Protocol):
+    """Construct a JQL expression from a raw argument value."""
+
+    def __call__(self, expression: str) -> str:
+        """Construct a JQL expression from a raw argument value."""
+        raise NotImplementedError()
+
+
 def identity(any_value: AnyType) -> AnyType:
     """Identity function."""
     return any_value
@@ -45,6 +54,7 @@ class JiraField:
 
     is_mutable: bool = True
 
+    jql_name: Optional[str] = None
     to_jira: Union[ToJira, NotImplementedType] = identity
     from_jira: FromJira = identity
 
@@ -86,6 +96,39 @@ class JiraField:
         }
 
         return ResolvedField(**field_dict)
+
+    def to_jql(self, expression: str) -> str:
+        """Convert human readable expression to JQL."""
+        minus, pattern = re.match('(-*)(.+)', expression).groups()
+        is_positive = not minus
+
+        search_values = list(map(
+            str.strip,
+            pattern.split(','),
+        ))
+        is_multiple = len(search_values) > 1
+
+        operator = {
+            False: {
+                False: '!=',
+                True: '=',
+            },
+            True: {
+                False: 'NOT IN',
+                True: 'IN',
+            },
+        }[is_multiple][is_positive]
+
+        jql_values = ', '.join(
+            f'"{search_value}"'
+            for search_value in search_values
+        )
+
+        if is_multiple:
+            jql_values = f'({jql_values})'
+
+        field_name = self.jql_name or self.jira_name
+        return f'{field_name} {operator} {jql_values}'
 
 
 @dataclass(frozen=True)

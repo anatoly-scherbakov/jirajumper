@@ -104,7 +104,6 @@ class UpdateCommand(AutoOptionsCommand):
 
 
 app.command()(jump)
-app.command(name='list')(list_issues)
 
 app.command(
     cls=CloneCommand,
@@ -119,3 +118,12 @@ app.command(
         'ignore_unknown_options': True,
     },
 )(update)
+
+
+app.command(
+    cls=AutoOptionsCommand,
+    context_settings={
+        'ignore_unknown_options': True,
+    },
+    name='list',
+)(list_issues)

@@ -10,6 +10,7 @@ get_name = operator.attrgetter('name')
 
 VERSION = JiraField(
     jira_name='fixVersions',
+    jql_name='fixVersion',
     human_name='version',
     description='Software product version the issue is attached to.',
 
