@@ -36,4 +36,10 @@ def list_issues(
     issues = context.obj.jira.search_issues(jql, maxResults=None)
 
     for issue in issues:
-        rich.print(f'* {issue.key} {issue.fields.summary}')
+        rich.print(
+            '* {key} [i]({status})[/i] {summary}'.format(
+                key=issue.key,
+                status=issue.fields.status,
+                summary=issue.fields.summary,
+            ),
+        )
