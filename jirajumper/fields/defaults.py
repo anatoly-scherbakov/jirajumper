@@ -72,8 +72,9 @@ PROJECT = JiraField(
 
     # It is impossible to easily migrate across projects.
     is_mutable=False,
+
     to_jira=lambda project_key: {'key': project_key},
-    from_jira=get_name,
+    from_jira=operator.attrgetter('key'),
 )
 
 DESCRIPTION = JiraField(

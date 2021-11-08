@@ -4,8 +4,8 @@ from typing import Dict, Optional
 import rich
 from documented import DocumentedError
 from jira import JIRA, JIRAError
-from typer import Option
 
+from jirajumper import default_options
 from jirajumper.cache.cache import JeevesJiraContext
 from jirajumper.fields import JiraFieldsRepository
 
@@ -54,10 +54,7 @@ def assign(jira: JIRA, key: str, assignee: str):
 
 def update(
     context: JeevesJiraContext,
-    assignee: Optional[str] = Option(
-        None,
-        help='Assignee display name or email address. Supports fuzzy search.',
-    ),
+    assignee: Optional[str] = default_options.ASSIGNEE,
     **options: str,
 ):
     """

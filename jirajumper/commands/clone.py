@@ -1,13 +1,17 @@
+from typing import Optional
+
 from jira import JIRAError
 
+from jirajumper import default_options
 from jirajumper.cache.cache import JeevesJiraContext
 from jirajumper.commands.select import jump
-from jirajumper.commands.update import JIRAUpdateFailed
+from jirajumper.commands.update import JIRAUpdateFailed, assign
 
 
 def clone(
     context: JeevesJiraContext,
     stay: bool = False,
+    assignee: Optional[str] = default_options.ASSIGNEE,
     **options: str,
 ):
     """Clone a JIRA issue."""
@@ -17,8 +21,7 @@ def clone(
         for field in context.obj.fields
         if field.is_writable()
     )
-
-    raise ValueError(parent_issue_fields)
+    # raise ValueError(parent_issue_fields)
 
     resolved_fields = context.obj.fields.match_options(options)
 
@@ -41,6 +44,14 @@ def clone(
             errors=err.response.json().get('errors', {}),
             fields=context.obj.fields,
         ) from err
+
+    assignee = getattr(parent_issue.fields.assignee, 'displayName', assignee)
+    if assignee:
+        assign(
+            jira=context.obj.jira,
+            key=issue.key,
+            assignee=assignee,
+        )
 
     if not stay:
         jump(
