@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "jirajumper"
 description = "Yet another JIRA issue manager CLI with emphasis on task chains."
-version = "0.1.4"
+version = "0.1.5"
 license = "MIT"
 
 authors = []

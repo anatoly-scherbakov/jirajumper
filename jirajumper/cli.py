@@ -14,6 +14,7 @@ from typer.core import TyperArgument, TyperCommand
 from jirajumper.cache.cache import GlobalOptions, field_key_by_name
 from jirajumper.client import jira
 from jirajumper.commands.clone import clone
+from jirajumper.commands.fork import fork
 from jirajumper.commands.link import link
 from jirajumper.commands.list_issues import list_issues
 from jirajumper.commands.select import jump
@@ -149,6 +150,13 @@ app.command(
         'ignore_unknown_options': True,
     },
 )(clone)
+
+app.command(
+    cls=CloneCommand,
+    context_settings={
+        'ignore_unknown_options': True,
+    },
+)(fork)
 
 app.command(
     cls=UpdateCommand,

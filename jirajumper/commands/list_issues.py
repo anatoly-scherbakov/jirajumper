@@ -37,9 +37,10 @@ def list_issues(
 
     for issue in issues:
         rich.print(
-            '* {key} [i]({status})[/i] {summary}'.format(
+            '* {key} [i]({status} / {assignee})[/i] {summary}'.format(
                 key=issue.key,
                 status=issue.fields.status,
+                assignee=issue.fields.assignee,
                 summary=issue.fields.summary,
             ),
         )
