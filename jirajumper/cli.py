@@ -15,6 +15,7 @@ from jirajumper.cache.cache import GlobalOptions, field_key_by_name
 from jirajumper.client import jira
 from jirajumper.commands.clone import clone
 from jirajumper.commands.fork import fork
+from jirajumper.commands.graph import graph
 from jirajumper.commands.link import link
 from jirajumper.commands.list_issues import list_issues
 from jirajumper.commands.select import jump
@@ -173,5 +174,13 @@ app.command(
     },
     name='list',
 )(list_issues)
+
+app.command(
+    cls=AutoOptionsCommand,
+    context_settings={
+        'ignore_unknown_options': True,
+    },
+    name='graph',
+)(graph)
 
 app.command()(link)
