@@ -21,7 +21,6 @@ def clone(
         for field in context.obj.fields
         if field.is_writable()
     )
-    # raise ValueError(parent_issue_fields)
 
     resolved_fields = context.obj.fields.match_options(options)
 
@@ -35,8 +34,6 @@ def clone(
         **update_fields,
     }
 
-    # raise ValueError(new_issue_fields)
-
     try:
         issue = context.obj.jira.create_issue(fields=new_issue_fields)
     except JIRAError as err:
@@ -45,7 +42,9 @@ def clone(
             fields=context.obj.fields,
         ) from err
 
-    assignee = getattr(parent_issue.fields.assignee, 'displayName', assignee)
+    if not assignee:
+        assignee = getattr(parent_issue.fields.assignee, 'displayName', None)
+
     if assignee:
         assign(
             jira=context.obj.jira,

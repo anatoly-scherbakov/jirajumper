@@ -14,9 +14,10 @@ from jirajumper.commands.update import JIRAUpdateFailed
 
 def fork(
     context: JeevesJiraContext,
-    link_type: LinkType = Option(LinkType.DEPENDED_ON_BY, '--type'),
+    link_type: LinkType = Option(LinkType.BLOCKS, '--link'),
     stay: bool = False,
     assignee: Optional[str] = default_options.ASSIGNEE,
+    summary: str = default_options.SUMMARY,
     **options: str,
 ):
     """Fork a JIRA issue."""
@@ -24,6 +25,7 @@ def fork(
         context=context,
         stay=True,
         assignee=assignee,
+        summary=summary,
         **options,
     )
 
