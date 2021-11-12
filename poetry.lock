@@ -602,12 +602,11 @@ trio = ["trio", "async-generator"]
 
 [[package]]
 name = "jira"
-version = "3.1.0rc1"
+version = "3.1.1"
 description = "Python library for interacting with JIRA via REST APIs."
 category = "main"
 optional = false
 python-versions = ">=3.6"
-develop = false
 
 [package.dependencies]
 defusedxml = "*"
@@ -622,12 +621,6 @@ cli = ["ipython (>=4.0.0)"]
 docs = ["Sphinx (>=2.2.0)", "sphinx-rtd-theme (>=0.4.3)"]
 opt = ["filemagic (>=1.6)", "pyjwt", "requests-jwt", "requests-kerberos"]
 test = ["docutils (>=0.12)", "flaky", "MarkupSafe (>=0.23)", "oauthlib", "py (>=1.4)", "pytest-cache", "pytest-cov", "pytest-instafail", "pytest-sugar", "pytest-timeout (>=1.3.1)", "pytest-xdist (>=2.2)", "pytest (>=6.0.0,<7.0)", "PyYAML (>=5.1)", "requests-mock", "requires.io", "tenacity", "wheel (>=0.24.0)", "xmlrunner (>=1.7.7)", "yanc (>=0.3.3)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/pycontribs/jira.git"
-reference = "3.1.0rc1"
-resolved_reference = "73d056e4ec5752327557014de90455e561b2590d"
 
 [[package]]
 name = "keyring"
@@ -1277,7 +1270,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "25f83e71adbe485f33c0d6ef980ccd752efce2964d9f6a60e4ed35df868f5296"
+content-hash = "4f1763d4b8e5d6aab4f14ce610b6608b703c2724165d0c675bd0b874ceb9bd7a"
 
 [metadata.files]
 appnope = [
@@ -1577,7 +1570,10 @@ jeepney = [
     {file = "jeepney-0.7.1-py3-none-any.whl", hash = "sha256:1b5a0ea5c0e7b166b2f5895b91a08c14de8915afda4407fb5022a195224958ac"},
     {file = "jeepney-0.7.1.tar.gz", hash = "sha256:fa9e232dfa0c498bd0b8a3a73b8d8a31978304dcef0515adc859d4e096f96f4f"},
 ]
-jira = []
+jira = [
+    {file = "jira-3.1.1-py3-none-any.whl", hash = "sha256:200c4d19f8be5ae39da3578597b78e21f3db69520c354be782bee9bd8bf21d09"},
+    {file = "jira-3.1.1.tar.gz", hash = "sha256:e2fde55d04a421c590cb197cf6b2d01176028004387d3e4cedff653dba408238"},
+]
 keyring = [
     {file = "keyring-23.2.1-py3-none-any.whl", hash = "sha256:bd2145a237ed70c8ce72978b497619ddfcae640b6dcf494402d5143e37755c6e"},
     {file = "keyring-23.2.1.tar.gz", hash = "sha256:6334aee6073db2fb1f30892697b1730105b5e9a77ce7e61fca6b435225493efe"},
