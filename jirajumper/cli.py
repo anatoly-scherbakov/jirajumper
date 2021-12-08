@@ -19,6 +19,7 @@ from jirajumper.commands.graph import graph
 from jirajumper.commands.link import link
 from jirajumper.commands.list_issues import list_issues
 from jirajumper.commands.select import jump
+from jirajumper.commands.status import status
 from jirajumper.commands.update import update
 from jirajumper.fields import FIELDS, JiraField, JiraFieldsRepository
 from jirajumper.models import OutputFormat
@@ -184,3 +185,4 @@ app.command(
 )(graph)
 
 app.command()(link)
+app.command()(status)

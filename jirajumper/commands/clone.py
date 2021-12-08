@@ -12,9 +12,14 @@ def clone(
     context: JeevesJiraContext,
     stay: bool = False,
     assignee: Optional[str] = default_options.ASSIGNEE,
+    summary: str = default_options.SUMMARY,
     **options: str,
 ):
     """Clone a JIRA issue."""
+    options.update({
+        'summary': summary,
+    })
+
     parent_issue = context.obj.current_issue
     parent_issue_fields = dict(
         field.store(field.retrieve(issue=parent_issue))
