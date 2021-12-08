@@ -1,26 +1,38 @@
-import rich
+from typing import Optional
+
 from jira import JIRAError
 
+from jirajumper import default_options
 from jirajumper.cache.cache import JeevesJiraContext
-from jirajumper.commands.update import JIRAUpdateFailed
+from jirajumper.commands.select import jump
+from jirajumper.commands.update import JIRAUpdateFailed, assign
 
 
 def clone(
     context: JeevesJiraContext,
-    **kwargs: str,
+    stay: bool = False,
+    assignee: Optional[str] = default_options.ASSIGNEE,
+    summary: str = default_options.SUMMARY,
+    **options: str,
 ):
     """Clone a JIRA issue."""
-    parent_issue = context.obj.current_issue
-    parent_issue_fields = {
-        field.jira_name: field.retrieve(issue=parent_issue)
-        for field in context.obj.fields
-    }
+    options.update({
+        'summary': summary,
+    })
 
-    update_fields = {
-        update_field.jira_name: kwargs[update_field.human_name]
-        for update_field in context.obj.fields
-        if kwargs.get(update_field.human_name)
-    }
+    parent_issue = context.obj.current_issue
+    parent_issue_fields = dict(
+        field.store(field.retrieve(issue=parent_issue))
+        for field in context.obj.fields
+        if field.is_writable()
+    )
+
+    resolved_fields = context.obj.fields.match_options(options)
+
+    update_fields = dict(
+        field.store(human_value)
+        for field, human_value in resolved_fields
+    )
 
     new_issue_fields = {
         **parent_issue_fields,
@@ -35,4 +47,20 @@ def clone(
             fields=context.obj.fields,
         ) from err
 
-    rich.print(issue)
+    if not assignee:
+        assignee = getattr(parent_issue.fields.assignee, 'displayName', None)
+
+    if assignee:
+        assign(
+            jira=context.obj.jira,
+            key=issue.key,
+            assignee=assignee,
+        )
+
+    if not stay:
+        jump(
+            context=context,
+            specifier=issue.key,
+        )
+
+    return issue

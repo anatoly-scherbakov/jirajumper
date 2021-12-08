@@ -1,6 +1,7 @@
+import operator
 import re
 from dataclasses import asdict, dataclass
-from typing import Protocol, Tuple, TypeVar, Union, Optional
+from typing import Optional, Protocol, Tuple, TypeVar, Union
 
 from jira import Issue
 
@@ -61,10 +62,7 @@ class JiraField:
     def retrieve(self, issue: Issue):
         """Retrieve the native field value from given issue."""
         return self.from_jira(
-            getattr(
-                issue.fields,
-                self.jira_name,
-            ),
+            operator.attrgetter(self.jira_name)(issue.fields),
         )
 
     def store(self, human_value: HumanValue) -> Tuple[str, JiraValue]:
@@ -78,10 +76,12 @@ class JiraField:
     def resolve(self, field_key_by_name: FieldKeyByName) -> 'ResolvedField':
         """Resolve jira_name."""
         if isinstance(self.jira_name, str):
-            jira_name = self.jira_name
+            unresolved_name = self.jira_name
+            resolved_name = self.jira_name
 
         elif isinstance(self.jira_name, FieldByName):
-            jira_name = field_key_by_name[self.jira_name.readable_name]
+            unresolved_name = self.jira_name.readable_name
+            resolved_name = field_key_by_name[unresolved_name]
 
         else:
             raise ValueError(
@@ -91,13 +91,34 @@ class JiraField:
         field_dict = {
             **asdict(self),
             **{
-                'jira_name': jira_name,
+                'unresolved_jira_name': unresolved_name,
+                'jira_name': resolved_name,
             },
         }
 
         return ResolvedField(**field_dict)
 
-    def to_jql(self, expression: str) -> str:
+
+def _jql_operator(is_multiple: bool, is_positive: bool) -> str:
+    return {
+        False: {
+            False: '!=',
+            True: '=',
+        },
+        True: {
+            False: 'NOT IN',
+            True: 'IN',
+        },
+    }[is_multiple][is_positive]
+
+
+@dataclass(frozen=True)
+class ResolvedField(JiraField):
+    """JIRA field description with resolved field name."""
+
+    unresolved_jira_name: Optional[str] = None
+
+    def to_jql(self, expression: str) -> str:   # noqa: WPS210
         """Convert human readable expression to JQL."""
         minus, pattern = re.match('(-*)(.+)', expression).groups()
         is_positive = not minus
@@ -108,16 +129,10 @@ class JiraField:
         ))
         is_multiple = len(search_values) > 1
 
-        operator = {
-            False: {
-                False: '!=',
-                True: '=',
-            },
-            True: {
-                False: 'NOT IN',
-                True: 'IN',
-            },
-        }[is_multiple][is_positive]
+        jql_operator = _jql_operator(
+            is_multiple=is_multiple,
+            is_positive=is_positive,
+        )
 
         jql_values = ', '.join(
             f'"{search_value}"'
@@ -127,10 +142,8 @@ class JiraField:
         if is_multiple:
             jql_values = f'({jql_values})'
 
-        field_name = self.jql_name or self.jira_name
-        return f'{field_name} {operator} {jql_values}'
+        field_name = self.jql_name or self.unresolved_jira_name
+        if ' ' in field_name:
+            field_name = f'"{field_name}"'
 
-
-@dataclass(frozen=True)
-class ResolvedField(JiraField):
-    """JIRA field description with resolved field name."""
+        return f'{field_name} {jql_operator} {jql_values}'

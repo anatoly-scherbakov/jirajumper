@@ -3,9 +3,9 @@ from typing import Dict, Optional
 
 import rich
 from documented import DocumentedError
-from jira import JIRAError, JIRA
-from typer import Option
+from jira import JIRA, JIRAError
 
+from jirajumper import default_options
 from jirajumper.cache.cache import JeevesJiraContext
 from jirajumper.fields import JiraFieldsRepository
 
@@ -54,22 +54,15 @@ def assign(jira: JIRA, key: str, assignee: str):
 
 def update(
     context: JeevesJiraContext,
-    assignee: Optional[str] = Option(
-        None,
-        help='Assignee display name or email address. Supports fuzzy search.',
-    ),
-    **kwargs: str,
+    assignee: Optional[str] = default_options.ASSIGNEE,
+    **options: str,
 ):
     """
     Update the selected JIRA issue.
 
     Use `jj jump` to select the issue to update.
     """
-    fields_and_values = [
-        (applicable_field, kwargs[applicable_field.human_name])
-        for applicable_field in context.obj.fields
-        if kwargs.get(applicable_field.human_name)
-    ]
+    fields_and_values = context.obj.fields.match_options(options)
 
     rich.print('Updating:')
     for print_field, human_value in fields_and_values:
